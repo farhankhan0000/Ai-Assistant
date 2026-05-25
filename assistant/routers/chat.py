@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi import APIRouter
 from typing import Annotated
 from fastapi import Depends
-from assistant.models import Message, MemoryFact
+from assistant.models import Message, MemoryFact, Conversation
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from assistant.database import get_db
@@ -27,9 +27,13 @@ class ChatRequest(BaseModel):
 
 @chat_router.post("/chat")
 async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest):
-
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
+
+    conversation = db.query(Conversation).filter(Conversation.id == request.conversation_id).first()
+    if conversation is None or conversation.user_id != user.get("user_id"):
+        raise HTTPException(status_code=403, detail="Wrong Conversation")
+
     user_message = Message(role="user",
                            content=request.content,
                            conversation_id=request.conversation_id)
@@ -47,10 +51,17 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
                 value=fact["value"],
                 user_id=user.get("user_id")
             )
+            db.add(memory_fact)
+        db.commit()
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid memory facts JSON")
+
+    all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id")).all()
 
 
 
-    ai_reply = get_ai_response(user_message.content, history, memory_facts)
+    ai_reply = get_ai_response(user_message.content, history, all_memory_facts)
 
     ai_message = Message(
         role="assistant",
