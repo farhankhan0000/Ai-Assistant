@@ -29,6 +29,11 @@ async def create_memory_fact(user: user_dependency, db: db_dependency, memory_fa
     db.add(memory_fact_model)
     db.commit()
 
+@memory_fact_router.get("/memoryfact/")
+async def get_memory_fact(user: user_dependency, db:db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return db.query(MemoryFact).all()
 
 
 
