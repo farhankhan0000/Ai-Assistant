@@ -46,18 +46,24 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     try:
         facts = json.loads(memory_facts)
         for fact in facts:
+            if 'key' in fact and 'value' in fact:
+                key = fact['key']
+                value = fact['value']
+            else:
+                key = list(fact.keys())[0]
+                value = list(fact.values())[0]
             memory_fact = MemoryFact(
-                key=fact['key'],
-                value=fact['value'],
+                key=key,
+                value=value,
                 user_id=user.get("user_id")
             )
             existing = db.query(MemoryFact).filter(MemoryFact.user_id==user.get("user_id"),
-                                                   MemoryFact.key == fact['key']).first()
+                                                   MemoryFact.key == key).first()
             if not existing:
                 db.add(memory_fact)
         db.commit()
 
-    except json.JSONDecodeError:
+    except Exception:
         pass
 
     all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id")).all()
