@@ -14,13 +14,20 @@
 }
 
 .conversation{
-
+    margin-bottom: 20px;
 }
 
+.profile{
+    display: flex;
+}
+
+.profile-picture{
+    width: 50px;
+    border-radius: 50px;
+}
 .message-section{
     display: flex;
     flex-direction: column;
     flex: 1;
-
 
 }
