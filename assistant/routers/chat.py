@@ -63,8 +63,8 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
                 db.add(memory_fact)
         db.commit()
 
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
     all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id")).all()
 

@@ -1,0 +1,26 @@
+.main-container{
+    display: flex;
+}
+
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin-right: 40px;
+}
+
+.new-chat{
+
+}
+
+.conversation{
+
+}
+
+.message-section{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+
+}

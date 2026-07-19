@@ -1,5 +1,5 @@
 import ollama
-from assistant.models import MemoryFact
+
 
 
 def get_ai_response( user_message: str, history, memory_facts):
