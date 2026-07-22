@@ -11,13 +11,37 @@
     text-align: center;
 }
 
+.message-container{
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    height: 600px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    padding-right: 250px;
+    padding-left: 250px;
+    margin-bottom: 50px;
+    overflow-y: auto;
+
+}
+
+.user-message{
+    margin-left: auto;
+    background-color: rgb(36,36,36);
+    color: white;
+}
+
+.ai-reply{
+    color: white;
+}
+
 .input-section{
     display: flex;
     flex-direction: row;
     gap: 0;
     margin-top: auto;
     margin-bottom: 30px;
-    height: 50px;
+    height: 70px;
     border-radius: 40px;
     margin-left: auto;
     margin-right: auto;
@@ -29,21 +53,22 @@
     color: white;
     border: none;
     width: 50px;
-    border-bottom-right-radius: 20px;
-    border-top-right-radius: 20px;
+    border-bottom-right-radius: 30px;
+    border-top-right-radius: 30px;
 }
 
 .add-button{
     background-color: rgb(33, 33, 33);
     border: none;
-    width: 40px;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
+    width: 50px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
 }
 
 .user-input{
     background-color: rgb(33, 33, 33);
     border: none;
-    width: 600px;
+    width: 650px;
 }
+
 
