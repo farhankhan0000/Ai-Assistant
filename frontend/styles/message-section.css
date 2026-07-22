@@ -10,3 +10,40 @@
     color: white;
     text-align: center;
 }
+
+.input-section{
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    margin-top: auto;
+    margin-bottom: 30px;
+    height: 50px;
+    border-radius: 40px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.send-button{
+    background-color: rgb(33, 33, 33);
+    color: white;
+    border: none;
+    width: 50px;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.add-button{
+    background-color: rgb(33, 33, 33);
+    border: none;
+    width: 40px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.user-input{
+    background-color: rgb(33, 33, 33);
+    border: none;
+    width: 600px;
+}
+
