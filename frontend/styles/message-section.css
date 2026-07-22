@@ -1,0 +1,12 @@
+
+.message-section{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+}
+
+.title{
+    color: white;
+    text-align: center;
+}

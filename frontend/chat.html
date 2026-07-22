@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Chat</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/message-section.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
 </head>
 <body>
     <div class="main-container">
@@ -11,7 +14,8 @@
             <button class="new-chat">
                 + New Chat
             </button>
-            <h3 class="recent-heading">Recents</h3>
+            <div class="recent-conversations">
+                <h3 class="recent-heading">Recents</h3>
             <div class="conversations">
                 <button class="conversation">
                     Conversation 1
@@ -23,17 +27,18 @@
                     Conversation 3
                 </button>
             </div>
-            <div class="profile">
-                <img class="profile-picture" src="project-pictures/cute_cat.avif">
-                <button class="profile-name">
-                    Farhan Khan
-                </button>
             </div>
+            <button class="profile">
+                <img class="profile-picture" src="project-pictures/cute_cat.avif">
+                <span class="profile-name">Farhan Khan</span>
+            </button>
         </div>
 
         <div class="message-section">
             <div class="chat-header">
-                AI Assistant
+                <h1 class="title">
+                    AI Assistant
+                </h1>
             </div>
 
             <div class="message-container">
