@@ -17,7 +17,7 @@ body{
     align-items: center;
 }
 
-.email-button{
+.email-input{
     padding-top: 1rem;
     padding-bottom: 1rem;
     padding-left: 8rem;
@@ -28,7 +28,7 @@ body{
     text-align: center;
 }
 
-.password-button{
+.password-input{
     padding-top: 1rem;
     padding-bottom: 1rem;
     padding-left: 8rem;
