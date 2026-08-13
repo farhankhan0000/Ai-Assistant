@@ -16,6 +16,9 @@ login_btn.addEventListener("click", async() => {
     method: "post",
     body: form_data
 });
+    if(response.ok){
+        window.location.href="chat.html";
+    }
     const data = await response.json();
     console.log(data);
 });
