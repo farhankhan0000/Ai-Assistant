@@ -20,6 +20,7 @@ login_btn.addEventListener("click", async() => {
         window.location.href="chat.html";
     }
     const data = await response.json();
+    document.cookie = `access_token=${data.access_token}; path=/`;
     console.log(data);
 });
 
