@@ -25,5 +25,6 @@ send_btn.addEventListener("click", async () => {
         body: JSON.stringify(chat_request)
     });
     const ai_reply = await response.json();
+    ai_msg.innerText = ai_reply.ai_reply;
     console.log(ai_reply);
 });
