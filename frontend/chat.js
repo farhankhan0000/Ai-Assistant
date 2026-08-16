@@ -36,4 +36,14 @@ send_btn.addEventListener("click", async () => {
 new_chat_btn.addEventListener("click", async() => {
     const token = document.
     cookie.split("; ").find(row => row.startsWith("access_token="))?.split("=")[1];
-})
+    const response = await fetch(CONVERSATION_URL, {
+        method: "POST",
+        headers: {
+            "content-Type" : "application/json",
+            "Authorization" : `Bearer ${token}`
+        },
+        body: JSON.stringify({title: "New Chat"})
+    });
+    const newConversation = await response.json();
+    console.log(newConversation);
+});
