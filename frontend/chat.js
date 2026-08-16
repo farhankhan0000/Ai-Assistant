@@ -6,7 +6,11 @@ const user_input = document.querySelector(".user-input");
 const send_btn = document.querySelector(".send-button");
 const user_msg = document.querySelector(".user-message");
 const ai_msg = document.querySelector(".ai-reply");
+const currentConversation_Id = null;
 CHAT_URL = "http://127.0.0.1:8000/chat";
+CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+
+
 
 send_btn.addEventListener("click", async () => {
     const chat_request = {
@@ -28,3 +32,8 @@ send_btn.addEventListener("click", async () => {
     ai_msg.innerText = ai_reply.ai_reply;
     console.log(ai_reply);
 });
+
+new_chat_btn.addEventListener("click", async() => {
+    const token = document.
+    cookie.split("; ").find(row => row.startsWith("access_token="))?.split("=")[1];
+})
