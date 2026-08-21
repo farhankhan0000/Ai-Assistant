@@ -9,7 +9,9 @@ const ai_msg = document.querySelector(".ai-reply");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
 CHAT_URL = "http://127.0.0.1:8000/chat";
-CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+
 
 
 const create_conversation_button = (title, id) => {
@@ -20,10 +22,25 @@ const create_conversation_button = (title, id) => {
     conversations_container.appendChild(newButton);
 }
 
+const load_saved_conversation = async ()  => {
+    const token = document.cookie.split("; ").find(row => row.startsWith("access_token="))
+    ?.split("=")[1];
+    const response = await fetch(GET_CONVERSATION_URL, {
+        method: "GET",
+        headers: {
+            "Authorization" : `Bearer ${token}`
+        }
+    });
+    let conversations = await response.json();
+    console.log(conversations);
+}
+
+load_saved_conversation();
+
 new_chat_btn.addEventListener("click", async() => {
     const token = document.
     cookie.split("; ").find(row => row.startsWith("access_token="))?.split("=")[1];
-    const response = await fetch(CONVERSATION_URL, {
+    const response = await fetch(POST_CONVERSATION_URL, {
         method: "POST",
         headers: {
             "content-Type" : "application/json",
