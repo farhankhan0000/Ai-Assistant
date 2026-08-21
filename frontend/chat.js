@@ -33,7 +33,7 @@ new_chat_btn.addEventListener("click", async() => {
     });
     const newConversation = await response.json();
     currentConversation_Id = newConversation.conversation_id;
-    create_conversation_button(newConversation.title, currentConversation_Id);
+    create_conversation_button(newConversation.conversation_title, currentConversation_Id);
     console.log(newConversation);
 });
 
