@@ -32,7 +32,9 @@ const load_saved_conversation = async ()  => {
         }
     });
     let conversations = await response.json();
-    console.log(conversations);
+    conversations.forEach(chat => {
+        create_conversation_button(chat.title, chat.id);
+    });
 }
 
 load_saved_conversation();
