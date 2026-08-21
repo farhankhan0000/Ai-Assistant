@@ -19,6 +19,11 @@ const create_conversation_button = (title, id) => {
     newButton.classList.add("conversation");
     newButton.innerText = title;
     newButton.dataset.id = id;
+    newButton.addEventListener("click", async (e) => {
+        const clickedId = e.target.dataset.id;
+        currentConversation_Id = clickedId;
+        console.log(`Switched to conversations: ${currentConversation_Id}`);
+    });
     conversations_container.appendChild(newButton);
 }
 
