@@ -83,5 +83,11 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     return {"ai_reply" : ai_message.content}
 
 
-
-
+@chat_router.get("/chat/{conversation_id}")
+async  def get_chat(user: user_dependency, db: db_dependency, conversation_id: int):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return db.query(Message).filter(Message.conversation_id == conversation_id).all()

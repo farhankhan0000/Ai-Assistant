@@ -29,12 +29,6 @@ async def create_conversation(user: user_dependency, db: db_dependency, conversa
     db.commit()
     return {"id" : conversation_model.id, "title" : conversation_model.title}
 
-@conversation_router.get("/conversation/{conversation_id}")
-async def get_conversation_by_conversation_id(user: user_dependency, db: db_dependency, conversation_id: int):
-    if user is None:
-        raise HTTPException(status_code=401, detail="Not Authenticated")
-    return db.query(Conversation).filter(Conversation.id == conversation_id).first()
-
 
 
 @conversation_router.get("/conversation")
