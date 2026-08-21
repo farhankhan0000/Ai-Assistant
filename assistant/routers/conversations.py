@@ -27,7 +27,7 @@ async def create_conversation(user: user_dependency, db: db_dependency, conversa
                                       user_id=user.get("user_id"))
     db.add(conversation_model)
     db.commit()
-    return {"conversation_id" : conversation_model.id, "conversation_title" : conversation_model.title}
+    return {"id" : conversation_model.id, "title" : conversation_model.title}
 
 
 
