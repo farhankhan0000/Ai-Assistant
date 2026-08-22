@@ -14,14 +14,26 @@ GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 
 
 
+
 const create_conversation_button = (title, id) => {
     const newButton = document.createElement("button");
     newButton.classList.add("conversation");
     newButton.innerText = title;
     newButton.dataset.id = id;
     newButton.addEventListener("click", async (e) => {
+        const token = document.cookie.split("; ").find(row => row.startsWith("access_token="))
+        ?.split("=")[1];
         const clickedId = e.target.dataset.id;
         currentConversation_Id = clickedId;
+        get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
+        const response = await fetch(get_chat_url, {
+            method: "GET",
+            headers: {
+                "AUTHORIZATION" : `Bearer ${token}`
+            }
+        });
+        messages = await response.json()
+        console.log(messages)
         console.log(`Switched to conversations: ${currentConversation_Id}`);
     });
     conversations_container.appendChild(newButton);
