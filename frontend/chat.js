@@ -33,6 +33,14 @@ const create_conversation_button = (title, id) => {
             }
         });
         messages = await response.json()
+        messages.forEach(msg => {
+            if(msg.role === "user"){
+                user_msg.innerText = msg.content;
+            }
+            else if(msg.role === "assistant"){
+                ai_msg.innerText = msg.content;
+            }
+        })
         console.log(messages)
         console.log(`Switched to conversations: ${currentConversation_Id}`);
     });
