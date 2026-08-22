@@ -6,6 +6,7 @@ const user_input = document.querySelector(".user-input");
 const send_btn = document.querySelector(".send-button");
 const user_msg = document.querySelector(".user-message");
 const ai_msg = document.querySelector(".ai-reply");
+const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
 CHAT_URL = "http://127.0.0.1:8000/chat";
@@ -45,6 +46,21 @@ const create_conversation_button = (title, id) => {
         console.log(`Switched to conversations: ${currentConversation_Id}`);
     });
     conversations_container.appendChild(newButton);
+}
+
+const create_message_bubble = (role, text) => {
+    const newDiv = document.createElement("div");
+    if(role === "user"){
+        newDiv.classList.add("user-message");
+        newDiv.innerText = text;
+        msg_container.appendChild(newDiv);
+
+    }
+    else if(role === "assistant"){
+        newDiv.classList.add("ai-reply");
+        newDiv.innerText = text;
+        msg_container.appendChild(newDiv);
+    }
 }
 
 const load_saved_conversation = async ()  => {
