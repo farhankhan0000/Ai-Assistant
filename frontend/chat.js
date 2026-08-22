@@ -25,14 +25,14 @@ const create_conversation_button = (title, id) => {
         ?.split("=")[1];
         const clickedId = e.target.dataset.id;
         currentConversation_Id = clickedId;
-        get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
+        const get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
         const response = await fetch(get_chat_url, {
             method: "GET",
             headers: {
-                "AUTHORIZATION" : `Bearer ${token}`
+                "Authorization" : `Bearer ${token}`
             }
         });
-        messages = await response.json()
+        let messages = await response.json()
         messages.forEach(msg => {
             if(msg.role === "user"){
                 user_msg.innerText = msg.content;
