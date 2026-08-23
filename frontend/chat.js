@@ -12,6 +12,7 @@ let currentConversation_Id = null;
 CHAT_URL = "http://127.0.0.1:8000/chat";
 POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
 
 
 
@@ -113,5 +114,18 @@ send_btn.addEventListener("click", async () => {
     });
     const ai_reply = await response.json();
     create_message_bubble("assistant", ai_reply.ai_reply);
+    const title_change_request = {
+        content: userText,
+        conversation_id: currentConversation_Id
+    }
+
+    const title_change_response = await fetch(CHANGE_TITLE_URL, {
+        method: "PUT",
+        headers: {
+            "Content-Type" : "application/json",
+            "Authorization" : `Bearer ${token}`
+        },
+        body: JSON.stringify(title_change_request)
+    });
     console.log(ai_reply);
 });
