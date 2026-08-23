@@ -104,6 +104,7 @@ new_chat_btn.addEventListener("click", async() => {
 send_btn.addEventListener("click", async () => {
     const userText = user_input.value;
     create_message_bubble("user", userText);
+    user_input.value = "";
     const chat_request = {
         content: userText,
         conversation_id: currentConversation_Id
