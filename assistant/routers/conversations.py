@@ -20,7 +20,7 @@ class ConversationRequest(BaseModel):
 
 class UserRequest(BaseModel):
     conversation_id: int
-    user_message: str
+    content: str
 
 
 
@@ -60,11 +60,14 @@ async def edit_conversation_title(user: user_dependency, db: db_dependency, requ
     if conversation is None:
         raise HTTPException(status_code=403, detail="Conversation is Wrong")
 
-    new_title = get_ai_title(request.user_message)
-    conversation.title = new_title
-    db.commit()
-    db.refresh(conversation)
-    return {"new_title" : conversation.title}
+
+    if conversation.title == "New Chat":
+        new_title = get_ai_title(request.content)
+        conversation.title = new_title
+        db.commit()
+        db.refresh(conversation)
+
+    return {"new_title": conversation.title}
 
 
 

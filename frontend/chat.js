@@ -114,11 +114,13 @@ send_btn.addEventListener("click", async () => {
     });
     const ai_reply = await response.json();
     create_message_bubble("assistant", ai_reply.ai_reply);
-    const title_change_request = {
+
+    const active_button = document.querySelector(`.conversation[data-id="${currentConversation_Id}"]`);
+    if (active_button.innerText == "New Chat"){
+        const title_change_request = {
         content: userText,
         conversation_id: currentConversation_Id
     }
-
     const title_change_response = await fetch(CHANGE_TITLE_URL, {
         method: "PUT",
         headers: {
@@ -127,5 +129,10 @@ send_btn.addEventListener("click", async () => {
         },
         body: JSON.stringify(title_change_request)
     });
+
+        const title_data = await title_change_response.json()
+        active_button.innerText = title_data.new_title;
     console.log(ai_reply);
+    }
+
 });
