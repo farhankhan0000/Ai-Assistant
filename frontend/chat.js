@@ -15,6 +15,18 @@ GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 
 
 
+const create_message_bubble = (role, text) => {
+    const newDiv = document.createElement("div");
+    if(role === "user"){
+        newDiv.classList.add("user-message");
+
+    }
+    else if(role === "assistant"){
+        newDiv.classList.add("ai-reply");
+    }
+    newDiv.innerText = text;
+    msg_container.appendChild(newDiv);
+}
 
 const create_conversation_button = (title, id) => {
     const newButton = document.createElement("button");
@@ -34,33 +46,22 @@ const create_conversation_button = (title, id) => {
             }
         });
         let messages = await response.json()
+        // messages.forEach(msg => {
+        //     if(msg.role === "user"){
+        //         user_msg.innerText = msg.content;
+        //     }
+        //     else if(msg.role === "assistant"){
+        //         ai_msg.innerText = msg.content;
+        //     }
+        // })
+        msg_container.innerHTML = "";
         messages.forEach(msg => {
-            if(msg.role === "user"){
-                user_msg.innerText = msg.content;
-            }
-            else if(msg.role === "assistant"){
-                ai_msg.innerText = msg.content;
-            }
+            create_message_bubble(msg.role, msg.content);
         })
         console.log(messages)
         console.log(`Switched to conversations: ${currentConversation_Id}`);
     });
     conversations_container.appendChild(newButton);
-}
-
-const create_message_bubble = (role, text) => {
-    const newDiv = document.createElement("div");
-    if(role === "user"){
-        newDiv.classList.add("user-message");
-        newDiv.innerText = text;
-        msg_container.appendChild(newDiv);
-
-    }
-    else if(role === "assistant"){
-        newDiv.classList.add("ai-reply");
-        newDiv.innerText = text;
-        msg_container.appendChild(newDiv);
-    }
 }
 
 const load_saved_conversation = async ()  => {
@@ -94,6 +95,7 @@ new_chat_btn.addEventListener("click", async() => {
     const newConversation = await response.json();
     currentConversation_Id = newConversation.id;
     create_conversation_button(newConversation.title, currentConversation_Id);
+    msg_container.innerHTML = "";
     console.log(newConversation);
 });
 
@@ -104,7 +106,7 @@ send_btn.addEventListener("click", async () => {
         content: user_input.value,
         conversation_id: currentConversation_Id
     };
-    user_msg.innerText = user_input.value;
+    // user_msg.innerText = user_input.value;
     const token = document.cookie.split("; ")
         .find(row => row.startsWith("access_token="))?.split("=")[1];
     const response = await fetch(CHAT_URL, {
@@ -116,6 +118,8 @@ send_btn.addEventListener("click", async () => {
         body: JSON.stringify(chat_request)
     });
     const ai_reply = await response.json();
-    ai_msg.innerText = ai_reply.ai_reply;
+    // ai_msg.innerText = ai_reply.ai_reply;
+    create_message_bubble("user", user_input.value);
+    create_message_bubble("assistant", ai_reply.ai_reply);
     console.log(ai_reply);
 });
