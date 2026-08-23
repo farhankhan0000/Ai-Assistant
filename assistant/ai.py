@@ -66,11 +66,16 @@ def get_ai_title(user_message: str):
                      "4. Do Not use any conversation filler like Here is your title or Sure."
                      "5. Output ONLY the words of the title and absolutely nothing else.")
 
-    full_prompt = f"{system_prompt}\n\nUser Message: {user_message}\nTitle:"
+    messages = [
+        {"role" : "system", "content" : system_prompt},
+        {"role" : "user", "content" : f"User Message: {user_message}\nTitle: "}
+    ]
+
+
 
     response = ollama.chat(
         model="llama3.1",
-        messages=full_prompt
+        messages=messages
     )
 
-    return response["title"]["content"]
+    return response["message"]["content"]
