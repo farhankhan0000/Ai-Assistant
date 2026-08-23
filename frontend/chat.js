@@ -45,15 +45,7 @@ const create_conversation_button = (title, id) => {
                 "Authorization" : `Bearer ${token}`
             }
         });
-        let messages = await response.json()
-        // messages.forEach(msg => {
-        //     if(msg.role === "user"){
-        //         user_msg.innerText = msg.content;
-        //     }
-        //     else if(msg.role === "assistant"){
-        //         ai_msg.innerText = msg.content;
-        //     }
-        // })
+        let messages = await response.json();
         msg_container.innerHTML = "";
         messages.forEach(msg => {
             create_message_bubble(msg.role, msg.content);

@@ -55,3 +55,22 @@ Rules:
 
 
     return response["message"]["content"]
+
+def get_ai_title(user_message: str):
+    system_prompt = ("You are a highly efficient title generator. Your only job is to read the user's "
+                     "message and summarize it into a short, relevant title."
+                     "STRICT RULES: "
+                     "1. The title must be between 2 and 5 words."
+                     "2. Do Not use quotation marks."
+                     "3. Do Not use any punctuation at the end."
+                     "4. Do Not use any conversation filler like Here is your title or Sure."
+                     "5. Output ONLY the words of the title and absolutely nothing else.")
+
+    full_prompt = f"{system_prompt}\n\nUser Message: {user_message}\nTitle:"
+
+    response = ollama.chat(
+        model="llama3.1",
+        messages=full_prompt
+    )
+
+    return response["title"]["content"]
