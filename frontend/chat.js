@@ -102,11 +102,12 @@ new_chat_btn.addEventListener("click", async() => {
 
 
 send_btn.addEventListener("click", async () => {
+    const userText = user_input.value;
+    create_message_bubble("user", userText);
     const chat_request = {
-        content: user_input.value,
+        content: userText,
         conversation_id: currentConversation_Id
     };
-    // user_msg.innerText = user_input.value;
     const token = document.cookie.split("; ")
         .find(row => row.startsWith("access_token="))?.split("=")[1];
     const response = await fetch(CHAT_URL, {
@@ -118,8 +119,6 @@ send_btn.addEventListener("click", async () => {
         body: JSON.stringify(chat_request)
     });
     const ai_reply = await response.json();
-    // ai_msg.innerText = ai_reply.ai_reply;
-    create_message_bubble("user", user_input.value);
     create_message_bubble("assistant", ai_reply.ai_reply);
     console.log(ai_reply);
 });
