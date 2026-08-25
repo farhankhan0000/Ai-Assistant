@@ -40,7 +40,8 @@ async def create_conversation(user: user_dependency, db: db_dependency, conversa
 async def get_conversation_by_user_id(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
-    return db.query(Conversation).filter(Conversation.user_id == user.get("user_id")).all()
+    return (db.query(Conversation).filter(Conversation.user_id == user.get("user_id"))
+            .order_by(Conversation.id.desc()).all())
 
 
 

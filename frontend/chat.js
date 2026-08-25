@@ -70,9 +70,10 @@ const load_saved_conversation = async ()  => {
     conversations.forEach(chat => {
         create_conversation_button(chat.title, chat.id);
     });
+
 }
 
-load_saved_conversation();
+
 
 new_chat_btn.addEventListener("click", async() => {
     const token = document.
@@ -136,3 +137,6 @@ send_btn.addEventListener("click", async () => {
     }
 
 });
+
+
+load_saved_conversation();
