@@ -138,5 +138,15 @@ send_btn.addEventListener("click", async () => {
 
 });
 
+user_input.addEventListener("keydown",  (e) => {
+    if(e.key === "Enter"){
+        e.preventDefault();
+
+        if(user_input.value.trim() !== ""){
+            send_btn.click();
+        }
+    }
+});
+
 
 load_saved_conversation();
