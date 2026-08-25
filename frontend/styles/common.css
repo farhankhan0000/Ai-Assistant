@@ -1,6 +1,8 @@
-.body{
+body{
     margin: 0;
     font-family: system-ui, sans-serif;
+    background-color: rgb(33, 33, 33);
+    color: white;
 }
 
 .main-container{
