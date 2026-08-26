@@ -27,6 +27,12 @@ const create_message_bubble = (role, text) => {
     }
     newDiv.innerText = text;
     msg_container.appendChild(newDiv);
+    setTimeout(() => {
+        msg_container.scrollTo({
+            top: msg_container.scrollHeight,
+            behavior: "smooth"
+    });
+    }, 10);
 }
 
 const create_conversation_button = (title, id) => {
