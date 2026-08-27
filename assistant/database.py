@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 
-SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg://postgres:test1234!@localhost:5432/ai_assisstant'
+SQLALCHEMY_DATABASE_URL = ('postgresql+psycopg://neondb_owner:npg_WTLkHM6e8sdv@ep'
+                           '-royal-sound-azid8qy6-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require')
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
