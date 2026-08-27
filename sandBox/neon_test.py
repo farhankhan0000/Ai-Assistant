@@ -18,7 +18,7 @@ cur = conn.cursor()
 memoryText = "PostgreSQL is an amazing database for AI and machine learning."
 print(f"1. Embedding and saving to cloud: '{memoryText}'")
 
-memoryVector = np.array(ollama.embeddings(model="nomic-embed-Text", prompt=memoryText)[embeddings])
+memoryVector = np.array(ollama.embeddings(model="nomic-embed-Text", prompt=memoryText)["embedding"])
 
 cur.execute(
     "INSERT INTO document_embeddings (content, embedding) VALUES (%s, %s)",
@@ -29,7 +29,7 @@ conn.commit()
 searchText = "I love data storage systems that understand math."
 print(f"f\n2. Searching database for something similar to: '{searchText}'")
 
-searchVector = np.array(ollama.embeddings(model="nomic-embed-Text", prompt=searchText)[embeddings])
+searchVector = np.array(ollama.embeddings(model="nomic-embed-Text", prompt=searchText)["embedding"])
 
 cur.execute("SELECT content FROM document_embeddings ORDER BY embedding <=> %s LIMIT 1",
             (searchVector,))
