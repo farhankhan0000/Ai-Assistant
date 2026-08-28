@@ -1,5 +1,8 @@
 import ollama
 import numpy as np
+from sqlalchemy import select
+
+from assistant.models import DocumentEmbedding
 
 
 def get_ai_response( user_message: str, history, memory_facts):
@@ -83,3 +86,9 @@ def get_ai_title(user_message: str):
 def get_vector(user_message: str):
     memory_vector = np.array(ollama.embeddings(model="nomic-embed-text", prompt=user_message)["embedding"])
     return memory_vector
+
+def search_history(user_message: str, db):
+    current_message = get_vector(user_message)
+    results = db.scalars(select(DocumentEmbedding)
+                         .order_by(DocumentEmbedding.embedding.cosine_distance(current_message))
+                         .limit(3)).all()
