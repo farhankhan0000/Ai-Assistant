@@ -5,13 +5,16 @@ from sqlalchemy import select
 from assistant.models import DocumentEmbedding
 
 
-def get_ai_response( user_message: str, history, memory_facts):
+def get_ai_response( user_message: str, db,  memory_facts):
+    relevant_past_messages = search_history(user_message, db)
     system_prompt = "You are a personal assistant. Here is what you know about the user: "
     for fact in memory_facts:
         system_prompt += f"{fact.key}: {fact.value}, "
+    if relevant_past_messages:
+        system_prompt += "\n\nHere is some relevant context from past conversations:\n"
+        for past_msg in relevant_past_messages:
+            system_prompt += f"-{past_msg}\n"
     messages = [{"role" : "system", "content" : system_prompt}]
-    for msg in history:
-        messages.append({"role" : msg.role, "content" : msg.content})
     messages.append({"role": "user", "content": user_message})
     response = ollama.chat(
         model="llama3.1",
@@ -92,3 +95,4 @@ def search_history(user_message: str, db):
     results = db.scalars(select(DocumentEmbedding)
                          .order_by(DocumentEmbedding.embedding.cosine_distance(current_message))
                          .limit(3)).all()
+    return [item.content for item in results]

@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import Annotated
 from fastapi import Depends
-from assistant.models import Message, MemoryFact, Conversation
+from assistant.models import Message, MemoryFact, Conversation, DocumentEmbedding
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from assistant.database import get_db
 from assistant.routers.auth import get_current_user
-from assistant.ai import get_ai_response, get_memory_facts
+from assistant.ai import get_ai_response, get_memory_facts, get_vector
 import json
 
 chat_router = APIRouter()
@@ -40,6 +40,16 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     db.add(user_message)
     db.commit()
 
+    message_vector = get_vector(request.content)
+
+    new_memory = DocumentEmbedding(
+        content = request.content,
+        embedding = message_vector
+    )
+
+    db.add(new_memory)
+    db.commit()
+
     history = db.query(Message).filter(Message.conversation_id == user_message.conversation_id).all()
     memory_facts = get_memory_facts(history)
     print(memory_facts)
@@ -70,7 +80,7 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
 
 
 
-    ai_reply = get_ai_response(user_message.content, history, all_memory_facts)
+    ai_reply = get_ai_response(user_message.content, db, all_memory_facts)
 
     ai_message = Message(
         role="assistant",
