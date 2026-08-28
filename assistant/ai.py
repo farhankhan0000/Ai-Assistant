@@ -1,5 +1,5 @@
 import ollama
-
+import numpy as np
 
 
 def get_ai_response( user_message: str, history, memory_facts):
@@ -79,3 +79,7 @@ def get_ai_title(user_message: str):
     )
 
     return response["message"]["content"]
+
+def get_vector(user_message: str):
+    memory_vector = np.array(ollama.embeddings(model="nomic-embed-text", prompt=user_message)["embedding"])
+    return memory_vector

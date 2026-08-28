@@ -1,6 +1,8 @@
 
 from assistant.database import Base
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, func
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, func, Text, column
+from pgvector.sqlalchemy import Vector
+
 
 
 class User(Base):
@@ -40,4 +42,8 @@ class MemoryFact(Base):
     source_message_id = Column(Integer, ForeignKey('messages.id'), nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
-
+class DocumentEmbedding(Base):
+    __tablename__ = 'document_embeddings'
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(Text, nullable=False)
+    embedding = Column(Vector(768))
