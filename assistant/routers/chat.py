@@ -50,7 +50,9 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     db.add(new_memory)
     db.commit()
 
-    history = db.query(Message).filter(Message.conversation_id == user_message.conversation_id).all()
+    history = (db.query(Message).filter(Message.conversation_id == user_message.conversation_id)
+               .order_by(Message.id.desc()).limit(5).all())
+    history.reverse()
     memory_facts = get_memory_facts(history)
     print(memory_facts)
     try:

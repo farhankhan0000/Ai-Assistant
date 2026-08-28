@@ -24,9 +24,8 @@ def get_ai_response( user_message: str, db,  memory_facts):
     return response["message"]["content"]
 
 def get_memory_facts(history):
-    recent_history = history[-10:]
     messages=[]
-    for msg in recent_history:
+    for msg in history:
         messages.append({"role" : msg.role, "content" : msg.content})
     messages.append({"role" : "user",
         "content" : """
