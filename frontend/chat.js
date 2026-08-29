@@ -111,6 +111,20 @@ send_btn.addEventListener("click", async () => {
     };
     const token = document.cookie.split("; ")
         .find(row => row.startsWith("access_token="))?.split("=")[1];
+
+    if(!currentConversation_Id){
+        const convResponse = await fetch(POST_CONVERSATION_URL, {
+            method: "POST",
+            headers:{
+                "Content-Type" : "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({title: "New Chat"})
+        });
+        const newConvo = await convResponse.json();
+        currentConversation_Id = newConvo.id;
+        create_conversation_button("New Chat", currentConversation_Id);
+    }
     const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
