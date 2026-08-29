@@ -44,40 +44,45 @@ def get_ai_response( user_message: str, db,  memory_facts):
     return response["message"]["content"]
 
 def get_memory_facts(history):
-    messages=[]
+    history_string = ""
     for msg in history:
-        messages.append({"role" : msg.role, "content" : msg.content})
-    messages.append({"role" : "user",
-        "content" : """
+        history_string += f"{msg.role} : {msg.content}\n"
+    messages = [
+        {"role" : "system",
+         "content" : """
     Extract important long-term memory facts about the user from the conversation.
 
 Return ONLY valid JSON.
 
-Format:
+Format Example:
 [
     {
-        "key": "name",
-        "value": "Farhan Khan"
+        "key": "primary_language",
+        "value": "Python"
     }
 ]
 
 Rules:
 - Use snake_case for all keys (e.g. programming_languages, not programmingLanguages)
 - Only extract facts about the USER, not general opinions or topics discussed
-- Only save personal information that is useful long term (name, skills, goals, preferences, health, background)
+- Only save personal information that is useful long term (name, skills, goals, preferences, health, background).Ignore general Opinions
+- CRITICAL: If a detail (like name, age, or location) is NOT mentioned, DO NOT create a key for it. Never use values like "Not mentioned", "Unknown", or "N/A".
 - If the same fact exists with a slightly different key, use the most specific standardized key
 - If nothing worth saving exists, return an empty array []
 - Do not add explanations
 - Do not add markdown
 - Do not add ```json
-    """})
+    """},
+        {
+            "role" : "user",
+            "content" : f"here is the conversation history to analyze:\n\n{history_string}"
+        }
+    ]
 
     response=ollama.chat(
         model="llama3.1",
         messages=messages
     )
-
-
 
     return response["message"]["content"]
 
