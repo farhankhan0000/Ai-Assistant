@@ -37,18 +37,6 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
                            content=request.content,
                            conversation_id=request.conversation_id)
 
-    db.add(user_message)
-    db.commit()
-
-    message_vector = get_vector(request.content)
-
-    new_memory = DocumentEmbedding(
-        content = request.content,
-        embedding = message_vector
-    )
-
-    db.add(new_memory)
-    db.commit()
 
     history = (db.query(Message).filter(Message.conversation_id == user_message.conversation_id)
                .order_by(Message.id.desc()).limit(5).all())
@@ -83,6 +71,14 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
 
 
     ai_reply = get_ai_response(user_message.content, db, all_memory_facts)
+
+    db.add(user_message)
+    message_vector = get_vector(request.content)
+    new_memory = DocumentEmbedding(
+        content=request.content,
+        embedding=message_vector
+    )
+    db.add(new_memory)
 
     ai_message = Message(
         role="assistant",

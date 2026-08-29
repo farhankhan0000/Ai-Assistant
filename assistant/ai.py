@@ -16,6 +16,7 @@ def get_ai_response( user_message: str, db,  memory_facts):
             system_prompt += f"-{past_msg}\n"
     messages = [{"role" : "system", "content" : system_prompt}]
     messages.append({"role": "user", "content": user_message})
+    print(system_prompt)
     response = ollama.chat(
         model="llama3.1",
         messages=messages
