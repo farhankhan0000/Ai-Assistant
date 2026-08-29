@@ -7,16 +7,35 @@ from assistant.models import DocumentEmbedding
 
 def get_ai_response( user_message: str, db,  memory_facts):
     relevant_past_messages = search_history(user_message, db)
-    system_prompt = "You are a personal assistant. Here is what you know about the user: "
+    system_prompt = ("You are a direct, Insightful, and a Practical AI advisor."
+                     "CORE BEHAVIOUR RULES: "
+                     "1. NEVER use phrases like 'Based on our previous conversation' "
+                     "'As you mentioned', or 'It seems we discussed'"
+                     "2. Use your knowledge naturally. "
+                     "Do not announce that you have memory or are reading from a database."
+                     "3. Provide structured, actionable advice. Do not just summarize what the user said"
+                     "or ask passive validation questions (like  'Is that a fair assessment?')."
+                     "\n"
+                     "USER KNOWLEDGE BASE:")
     for fact in memory_facts:
-        system_prompt += f"{fact.key}: {fact.value}, "
+        if "Not mentioned" not in str(fact.value) and str(fact.value) != "null":
+            system_prompt += f"-{fact.key}: {fact.value}\n"
+
+    messages = [{"role": "system", "content": system_prompt}]
+
+    user_content = ""
     if relevant_past_messages:
-        system_prompt += "\n\nHere is some relevant context from past conversations:\n"
+        user_content += ("BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n")
         for past_msg in relevant_past_messages:
-            system_prompt += f"-{past_msg}\n"
-    messages = [{"role" : "system", "content" : system_prompt}]
-    messages.append({"role": "user", "content": user_message})
+            user_content += f"-{past_msg}\n"
+        user_content += "\n"
+
+    user_content += f"CURRENT_MESSAGE: {user_message} "
+    messages.append({"role": "user", "content": user_content})
+    print("\n---SYSTEM PROMPT---")
     print(system_prompt)
+    print("\n---USER PROMPT---")
+    print(user_content)
     response = ollama.chat(
         model="llama3.1",
         messages=messages
