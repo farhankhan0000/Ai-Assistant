@@ -8,6 +8,17 @@
 
 }
 
+.conversation-wrapper{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 4px;
+    gap: 2px;
+}
+
+.conversation-wrapper:hover .options-button{
+    display: block;
+}
+
 .new-chat, .conversation{
     text-align: left;
     background-color: rgb(1, 1, 0);
@@ -42,7 +53,12 @@
     height: 0;
 }
 
-
+.options-button{
+    background-color: rgb(1, 1, 0);
+    border: none;
+    color: white;
+    display: none;
+}
 
 .recent-conversations{
     display: flex;

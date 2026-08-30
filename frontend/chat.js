@@ -49,9 +49,9 @@ const create_conversation_button = (title, id) => {
 
 
     const newDiv = document.createElement("div");
-    newDiv.classList.add("conversation_wrapper");
+    newDiv.classList.add("conversation-wrapper");
     newDiv.appendChild(newButton);
-    newDiv.appendChild(newDeleteButton);
+    newDiv.appendChild(optionsButton);
 
 
     newButton.addEventListener("click", async (e) => {
@@ -74,7 +74,7 @@ const create_conversation_button = (title, id) => {
         console.log(messages)
         console.log(`Switched to conversations: ${currentConversation_Id}`);
     });
-    conversations_container.appendChild(newButton);
+    conversations_container.appendChild(newDiv);
 }
 
 const load_saved_conversation = async ()  => {
