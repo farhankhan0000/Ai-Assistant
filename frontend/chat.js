@@ -13,6 +13,7 @@ CHAT_URL = "http://127.0.0.1:8000/chat";
 POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
+CONVERSATION_DELETE_URL = "http://127.0.0.1:8000/conversation";
 
 
 
@@ -36,10 +37,23 @@ const create_message_bubble = (role, text) => {
 }
 
 const create_conversation_button = (title, id) => {
+
     const newButton = document.createElement("button");
     newButton.classList.add("conversation");
     newButton.innerText = title;
     newButton.dataset.id = id;
+
+    const optionsButton = document.createElement("button");
+    optionsButton.classList.add("options-button");
+    optionsButton.innerText = "⋮";
+
+
+    const newDiv = document.createElement("div");
+    newDiv.classList.add("conversation_wrapper");
+    newDiv.appendChild(newButton);
+    newDiv.appendChild(newDeleteButton);
+
+
     newButton.addEventListener("click", async (e) => {
         const token = document.cookie.split("; ").find(row => row.startsWith("access_token="))
         ?.split("=")[1];
