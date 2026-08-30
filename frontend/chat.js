@@ -48,10 +48,21 @@ const create_conversation_button = (title, id) => {
     optionsButton.innerText = "⋮";
 
 
+    const deleteButton = document.createElement("button");
+    deleteButton.classList.add("delete-button");
+    deleteButton.innerText = "Delete";
+
+    const dropDownContainer = document.createElement("div");
+    dropDownContainer.classList.add("drop-down");
+    dropDownContainer.appendChild(deleteButton);
+
+
+
     const newDiv = document.createElement("div");
     newDiv.classList.add("conversation-wrapper");
     newDiv.appendChild(newButton);
     newDiv.appendChild(optionsButton);
+    newDiv.appendChild(dropDownContainer);
 
 
     newButton.addEventListener("click", async (e) => {
@@ -73,6 +84,13 @@ const create_conversation_button = (title, id) => {
         })
         console.log(messages)
         console.log(`Switched to conversations: ${currentConversation_Id}`);
+    });
+
+    optionsButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        dropDownContainer.classList.toggle("show");
+
     });
     conversations_container.appendChild(newDiv);
 }

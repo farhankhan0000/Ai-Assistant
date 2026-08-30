@@ -13,9 +13,29 @@
     flex-direction: row;
     margin-bottom: 4px;
     gap: 2px;
+    position: relative;
 }
 
 .conversation-wrapper:hover .options-button{
+    display: block;
+}
+
+.drop-down{
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    z-index: 1000;
+    background-color: rgb(26,26,26);
+    border: 1px solid rgb(60,60,60);
+    border-radius: 6px;
+    padding: 5px;
+    min-width: 100px;
+
+    display: none;
+}
+
+.drop-down.show{
     display: block;
 }
 
