@@ -105,10 +105,6 @@ send_btn.addEventListener("click", async () => {
     const userText = user_input.value;
     create_message_bubble("user", userText);
     user_input.value = "";
-    const chat_request = {
-        content: userText,
-        conversation_id: currentConversation_Id
-    };
     const token = document.cookie.split("; ")
         .find(row => row.startsWith("access_token="))?.split("=")[1];
 
@@ -122,9 +118,15 @@ send_btn.addEventListener("click", async () => {
             body: JSON.stringify({title: "New Chat"})
         });
         const newConvo = await convResponse.json();
+
         currentConversation_Id = newConvo.id;
+
         create_conversation_button("New Chat", currentConversation_Id);
     }
+    const chat_request = {
+        content: userText,
+        conversation_id: currentConversation_Id
+    };
     const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
@@ -137,7 +139,7 @@ send_btn.addEventListener("click", async () => {
     create_message_bubble("assistant", ai_reply.ai_reply);
 
     const active_button = document.querySelector(`.conversation[data-id="${currentConversation_Id}"]`);
-    if (active_button.innerText == "New Chat"){
+    if (active_button.innerText === "New Chat"){
         const title_change_request = {
         content: userText,
         conversation_id: currentConversation_Id
