@@ -21,10 +21,7 @@
 }
 
 .drop-down{
-    position: absolute;
-    left: 100%;
-    margin-left: 15px;
-
+    width: 100px;
     z-index: 1000;
     background-color: rgb(26,26,26);
     border: 1px solid rgb(60,60,60);

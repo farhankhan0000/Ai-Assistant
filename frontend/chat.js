@@ -62,7 +62,8 @@ const create_conversation_button = (title, id) => {
     newDiv.classList.add("conversation-wrapper");
     newDiv.appendChild(newButton);
     newDiv.appendChild(optionsButton);
-    newDiv.appendChild(dropDownContainer);
+
+    document.body.appendChild(dropDownContainer);
 
 
     newButton.addEventListener("click", async (e) => {
@@ -88,6 +89,20 @@ const create_conversation_button = (title, id) => {
 
     optionsButton.addEventListener("click", (e) => {
         e.stopPropagation();
+
+        const rect = optionsButton.getBoundingClientRect();
+
+        dropDownContainer.style.position = "fixed";
+        dropDownContainer.style.top = `${rect.top}px`;
+        dropDownContainer.style.left = `${rect.right + 15}px`;
+
+        const allOpenMenus = document.querySelectorAll(".drop-down.show");
+
+        allOpenMenus.forEach(menu => {
+            if(menu !== dropDownContainer){
+                menu.classList.remove("show");
+            }
+        });
 
         dropDownContainer.classList.toggle("show");
 
