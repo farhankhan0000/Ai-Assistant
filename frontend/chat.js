@@ -13,7 +13,7 @@ CHAT_URL = "http://127.0.0.1:8000/chat";
 POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
 CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
-CONVERSATION_DELETE_URL = "http://127.0.0.1:8000/conversation";
+
 
 
 
@@ -108,15 +108,28 @@ const create_conversation_button = (title, id) => {
 
     });
 
-    deleteButton.addEventListener("click", async  () => {
+    deleteButton.addEventListener("click", async  (e) => {
+        e.stopPropagation();
         const token = document.cookie.split(";").find(row => row.startsWith("access_token="))
             ?.split("=")[1];
-        const response = await fetch(`CONVERSATION_DELETE_URL/${currentConversation_Id}`, {
+        const delete_url = `http://127.0.0.1:8000/conversation${id}`;
+        const response = await fetch(delete_url, {
             method: "delete",
             headers: {
                 "Authorization" : `Bearer ${token}`
             }
         });
+        if(response.ok){
+            newDiv.remove()
+            dropDownContainer.remove()
+        }
+        if(currentConversation_Id === id){
+            msg_container.innerHTML = "";
+            currentConversation_Id = null;
+        }
+        else{
+            console.log("Failed to delete the conversation on backend");
+        }
     });
     conversations_container.appendChild(newDiv);
 }
