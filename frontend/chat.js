@@ -1,11 +1,6 @@
 const new_chat_btn = document.querySelector(".new-chat");
-const conversation_btn = document.querySelectorAll(".conversation");
-const profile_btn = document.querySelector(".profile");
-const add_btn = document.querySelector(".add-button");
 const user_input = document.querySelector(".user-input");
 const send_btn = document.querySelector(".send-button");
-const user_msg = document.querySelector(".user-message");
-const ai_msg = document.querySelector(".ai-reply");
 const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
@@ -112,7 +107,7 @@ const create_conversation_button = (title, id) => {
         e.stopPropagation();
         const token = document.cookie.split(";").find(row => row.startsWith("access_token="))
             ?.split("=")[1];
-        const delete_url = `http://127.0.0.1:8000/conversation${id}`;
+        const delete_url = `http://127.0.0.1:8000/conversation/${id}`;
         const response = await fetch(delete_url, {
             method: "delete",
             headers: {
@@ -122,10 +117,11 @@ const create_conversation_button = (title, id) => {
         if(response.ok){
             newDiv.remove()
             dropDownContainer.remove()
+
+            if(currentConversation_Id == id){
+                msg_container.innerHTML = "";
+                currentConversation_Id = null;
         }
-        if(currentConversation_Id === id){
-            msg_container.innerHTML = "";
-            currentConversation_Id = null;
         }
         else{
             console.log("Failed to delete the conversation on backend");
