@@ -107,6 +107,17 @@ const create_conversation_button = (title, id) => {
         dropDownContainer.classList.toggle("show");
 
     });
+
+    deleteButton.addEventListener("click", async  () => {
+        const token = document.cookie.split(";").find(row => row.startsWith("access_token="))
+            ?.split("=")[1];
+        const response = await fetch(`CONVERSATION_DELETE_URL/${currentConversation_Id}`, {
+            method: "delete",
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        });
+    });
     conversations_container.appendChild(newDiv);
 }
 

@@ -36,6 +36,19 @@
     display: block;
 }
 
+.delete-button{
+    width: 100%;
+    text-align: left;
+    padding: 5px 10px;
+    background-color: rgb(26,26,26);
+    border: none;
+    color: white;
+}
+
+.delete-button:hover{
+    background-color: rgb(30,30,30);
+}
+
 .new-chat, .conversation{
     text-align: left;
     background-color: rgb(1, 1, 0);
@@ -76,6 +89,10 @@
     color: white;
     display: none;
     margin-left: auto;
+}
+
+.options-button:hover {
+    background-color: rgb(10, 10, 10);
 }
 
 .recent-conversations{
