@@ -5,7 +5,7 @@ from sqlalchemy import select
 from assistant.models import DocumentEmbedding
 
 
-def get_ai_response( user_message: str, db,  memory_facts):
+def get_ai_response( user_message: str, db,  memory_facts, history):
     relevant_past_messages = search_history(user_message, db)
     system_prompt = ("You are a direct, Insightful, and a Practical AI advisor."
                      "CORE BEHAVIOUR RULES: "
@@ -25,10 +25,17 @@ def get_ai_response( user_message: str, db,  memory_facts):
 
     user_content = ""
     if relevant_past_messages:
-        user_content += ("BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n")
+        user_content += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n"
         for past_msg in relevant_past_messages:
             user_content += f"-{past_msg}\n"
         user_content += "\n"
+
+    user_content += "The next messages are your recent interaction with the users so use it to build context\n"
+
+
+    for msg in history:
+        user_content += f"{msg.role} : {msg.content}\n"
+
 
     user_content += f"CURRENT_MESSAGE: {user_message} "
     messages.append({"role": "user", "content": user_content})
