@@ -70,7 +70,7 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
 
 
 
-    ai_reply = get_ai_response(user_message.content, db, all_memory_facts)
+    ai_reply = get_ai_response(user_message.content, db, all_memory_facts, history)
 
     db.add(user_message)
     message_vector = get_vector(request.content)

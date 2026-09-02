@@ -1,12 +1,11 @@
 import ollama
 import numpy as np
-from sqlalchemy import select
+from sqlalchemy import select, true
 
 from assistant.models import DocumentEmbedding
 
 
 def get_ai_response( user_message: str, db,  memory_facts, history):
-    relevant_past_messages = search_history(user_message, db)
     system_prompt = ("You are a direct, Insightful, and a Practical AI advisor."
                      "CORE BEHAVIOUR RULES: "
                      "1. NEVER use phrases like 'Based on our previous conversation' "
@@ -24,13 +23,23 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
     messages = [{"role": "system", "content": system_prompt}]
 
     user_content = ""
-    if relevant_past_messages:
-        user_content += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n"
-        for past_msg in relevant_past_messages:
-            user_content += f"-{past_msg}\n"
-        user_content += "\n"
 
-    user_content += "The next messages are your recent interaction with the users so use it to build context\n"
+    formal_words = ["hi", "hey", "hello", "ok", "thankyou", "haha", "ha", "yo", "welcome", "sayonara", "bye",
+                    "oh"]
+
+    formal_words_present = False
+    for words in formal_words:
+        if user_message.lower().strip("!.?,") == words:
+            formal_words_present = True
+    if not formal_words_present:
+        relevant_past_messages = search_history(user_message, db)
+        if relevant_past_messages:
+            user_content += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n"
+            for past_msg in relevant_past_messages:
+                user_content += f"-{past_msg}\n"
+            user_content += "\n"
+
+        user_content += "The Next Messages are your recent interaction with the user. So Use them to build context\n"
 
 
     for msg in history:
