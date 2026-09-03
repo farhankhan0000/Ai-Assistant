@@ -22,36 +22,39 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
 
     messages = [{"role": "system", "content": system_prompt}]
 
-    user_content = ""
+    past_context = ""
 
     formal_words = ["hi", "hey", "hello", "ok", "thankyou", "haha", "ha", "yo", "welcome", "sayonara", "bye",
                     "oh"]
 
     formal_words_present = False
     for words in formal_words:
-        if user_message.lower().strip("!.?,") == words:
+        if user_message.lower().strip("!.?, ") == words:
             formal_words_present = True
     if not formal_words_present:
         relevant_past_messages = search_history(user_message, db)
         if relevant_past_messages:
-            user_content += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this seciton):\n"
+            past_context += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this section):\n"
             for past_msg in relevant_past_messages:
-                user_content += f"-{past_msg}\n"
-            user_content += "\n"
+                past_context += f"-{past_msg}\n"
 
-        user_content += "The Next Messages are your recent interaction with the user. So Use them to build context\n"
-
-
-    for msg in history:
-        user_content += f"{msg.role} : {msg.content}\n"
+            messages.append({"role" : "system", "content" : past_context})
 
 
-    user_content += f"CURRENT_MESSAGE: {user_message} "
-    messages.append({"role": "user", "content": user_content})
-    print("\n---SYSTEM PROMPT---")
-    print(system_prompt)
-    print("\n---USER PROMPT---")
-    print(user_content)
+    if history:
+        messages.append({
+            "role" : "system", "content" : "The following messages are your recent chronological interactions"
+                                           " with the user, Use them to maintain Conversational flow."
+        })
+
+        for msg in history:
+            messages.append({"role" : msg.role, "content" : msg.content})
+
+
+    print("\n---- MESSAGE PAYLOAD ---\n")
+    for m in messages:
+        print(f"[{m['role'].upper()}] : {m['content']}\n")
+
     response = ollama.chat(
         model="llama3.1",
         messages=messages
