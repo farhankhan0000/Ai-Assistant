@@ -14,8 +14,10 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
                      "Do not announce that you have memory or are reading from a database."
                      "3. Provide structured, actionable advice. Do not just summarize what the user said"
                      "or ask passive validation questions (like  'Is that a fair assessment?')."
-                     "\n"
+                     "4. Output ONLY your response. NEVER Prefix your reply with labels like 'assistant: ',"
+                     "'AI: ' or your role\n\n"
                      "USER KNOWLEDGE BASE:")
+
     for fact in memory_facts:
         if "Not mentioned" not in str(fact.value) and str(fact.value) != "null":
             system_prompt += f"-{fact.key}: {fact.value}\n"
@@ -63,6 +65,8 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
     return response["message"]["content"]
 
 def get_memory_facts(history):
+    if len(history) < 2:
+        return "[]"
     history_string = ""
     for msg in history:
         history_string += f"{msg.role} : {msg.content}\n"

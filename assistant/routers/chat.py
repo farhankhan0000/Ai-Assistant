@@ -42,6 +42,7 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
                .order_by(Message.id.desc()).limit(5).all())
     history.reverse()
     memory_facts = get_memory_facts(history)
+
     print(memory_facts)
     try:
         facts = json.loads(memory_facts)
