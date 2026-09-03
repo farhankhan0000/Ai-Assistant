@@ -3,11 +3,14 @@ import numpy as np
 from sqlalchemy import select, true
 
 from assistant.models import DocumentEmbedding
+from datetime import datetime
 
 
 def get_ai_response( user_message: str, db,  memory_facts, history):
-    system_prompt = ("You are a direct, Insightful, and a Practical AI advisor."
-                     "CORE BEHAVIOUR RULES: "
+    current_time = datetime.now().strftime("%A, %B %d, %Y at %I:%M %p")
+    system_prompt = (f"You are a direct, Insightful, and a Practical AI advisor.\n"
+                     "CORE BEHAVIOUR RULES: \n"
+                     f"CURRENT SYSTEM TIME : {current_time}\n"
                      "1. NEVER use phrases like 'Based on our previous conversation' "
                      "'As you mentioned', or 'It seems we discussed'"
                      "2. Use your knowledge naturally. "
@@ -51,6 +54,8 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
 
         for msg in history:
             messages.append({"role" : msg.role, "content" : msg.content})
+
+    messages.append({"role" : "user", "content" : user_message})
 
 
     print("\n---- MESSAGE PAYLOAD ---\n")
