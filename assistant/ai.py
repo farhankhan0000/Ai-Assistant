@@ -6,6 +6,8 @@ from assistant.models import DocumentEmbedding
 from datetime import datetime
 
 
+
+
 def get_ai_response( user_message: str, db,  memory_facts, history):
     current_time = datetime.now().strftime("%A, %B %d, %Y at %I:%M %p")
     system_prompt = (f"You are a direct, Insightful, and a Practical AI advisor.\n"

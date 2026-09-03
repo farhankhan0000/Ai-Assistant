@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import Annotated
 from fastapi import Depends
+from redis.multidb import exception
+
 from assistant.models import Message, MemoryFact, Conversation, DocumentEmbedding
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -21,8 +23,40 @@ class ChatRequest(BaseModel):
     conversation_id: int
 
 
+def process_background_chores(user_message: str, ai_message_content: str, conversation_id: int, user, db: Session, history: list):
+    try:
+        message_vector = get_vector(user_message)
+        new_memory = DocumentEmbedding(
+            content = user_message,
+            embedding = message_vector
+        )
+        db.add(new_memory)
 
+        ai_message = Message(
+            role = "assistant",
+            content = ai_message_content,
+            conversation_id = conversation_id
+        )
+        db.add(ai_message)
 
+        memory_facts = get_memory_facts(history)
+        facts = json.loads(memory_facts)
+        for fact in facts:
+            key = fact.get('key') or list(fact.keys())[0]
+            value = fact.get('value') or list(fact.values())[0]
+
+            existing = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id"),
+                                                   MemoryFact.key == key).first()
+            if not existing:
+                memory_fact = MemoryFact(
+                    key = key,
+                    value = value,
+                    user_id = user.get("user_id")
+                )
+                db.add(memory_fact)
+    except exception as e:
+        print(f"Background task failed: {e}")
+        db.rollback()
 
 @chat_router.post("/chat", status_code=status.HTTP_201_CREATED)
 async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest):
