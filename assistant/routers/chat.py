@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import Annotated
 from fastapi import Depends
-from redis.multidb import exception
+from starlette.background import BackgroundTask
 
 from assistant.models import Message, MemoryFact, Conversation, DocumentEmbedding
 from sqlalchemy.orm import Session
@@ -23,7 +23,7 @@ class ChatRequest(BaseModel):
     conversation_id: int
 
 
-def process_background_chores(user_message: str, ai_message_content: str, conversation_id: int, user, db: Session, history: list):
+def process_background_chores(user_message: str, ai_message_content: str, conversation_id: int, user_id, db: Session, history: list):
     try:
         message_vector = get_vector(user_message)
         new_memory = DocumentEmbedding(
@@ -45,21 +45,22 @@ def process_background_chores(user_message: str, ai_message_content: str, conver
             key = fact.get('key') or list(fact.keys())[0]
             value = fact.get('value') or list(fact.values())[0]
 
-            existing = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id"),
+            existing = db.query(MemoryFact).filter(MemoryFact.user_id == user_id,
                                                    MemoryFact.key == key).first()
             if not existing:
                 memory_fact = MemoryFact(
                     key = key,
                     value = value,
-                    user_id = user.get("user_id")
+                    user_id = user_id
                 )
                 db.add(memory_fact)
-    except exception as e:
+        db.commit()
+    except Exception as e:
         print(f"Background task failed: {e}")
         db.rollback()
 
 @chat_router.post("/chat", status_code=status.HTTP_201_CREATED)
-async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest):
+async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest, background_tasks: BackgroundTask):
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
 
@@ -71,35 +72,14 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
                            content=request.content,
                            conversation_id=request.conversation_id)
 
+    db.add(user_message)
+    db.commit()
+
 
     history = (db.query(Message).filter(Message.conversation_id == user_message.conversation_id)
                .order_by(Message.id.desc()).limit(5).all())
     history.reverse()
-    memory_facts = get_memory_facts(history)
 
-    print(memory_facts)
-    try:
-        facts = json.loads(memory_facts)
-        for fact in facts:
-            if 'key' in fact and 'value' in fact:
-                key = fact['key']
-                value = fact['value']
-            else:
-                key = list(fact.keys())[0]
-                value = list(fact.values())[0]
-            memory_fact = MemoryFact(
-                key=key,
-                value=value,
-                user_id=user.get("user_id")
-            )
-            existing = db.query(MemoryFact).filter(MemoryFact.user_id==user.get("user_id"),
-                                                   MemoryFact.key == key).first()
-            if not existing:
-                db.add(memory_fact)
-        db.commit()
-
-    except Exception as e:
-        print(e)
 
     all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id")).all()
 
@@ -107,23 +87,17 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
 
     ai_reply = get_ai_response(user_message.content, db, all_memory_facts, history)
 
-    db.add(user_message)
-    message_vector = get_vector(request.content)
-    new_memory = DocumentEmbedding(
-        content=request.content,
-        embedding=message_vector
+    background_tasks.add_task(
+        process_background_chores,
+        user_message = request.content,
+        ai_message_content = ai_reply,
+        conversation_id = request.conversation_id,
+        user_id = user.get("user_id"),
+        db=db,
+        history=history
     )
-    db.add(new_memory)
 
-    ai_message = Message(
-        role="assistant",
-        content=ai_reply,
-        conversation_id=request.conversation_id
-    )
-    db.add(ai_message)
-    db.commit()
-
-    return {"ai_reply" : ai_message.content}
+    return {"ai_reply" : ai_reply}
 
 
 @chat_router.get("/chat/{conversation_id}")
