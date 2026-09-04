@@ -67,8 +67,6 @@ const create_conversation_button = (title, id) => {
         const get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
         const response = await fetch(get_chat_url, {
             method: "GET",
-            headers: {
-            },
             credentials: "include"
         });
         let messages = await response.json();
@@ -106,9 +104,6 @@ const create_conversation_button = (title, id) => {
         const delete_url = `http://127.0.0.1:8000/conversation/${id}`;
         const response = await fetch(delete_url, {
             method: "delete",
-            headers: {
-
-            },
             credentials: "include"
         });
         if(response.ok){
@@ -130,9 +125,6 @@ const create_conversation_button = (title, id) => {
 const load_saved_conversation = async ()  => {
     const response = await fetch(GET_CONVERSATION_URL, {
         method: "GET",
-        headers: {
-
-        },
         credentials : "include"
     });
     let conversations = await response.json();
@@ -164,6 +156,9 @@ new_chat_btn.addEventListener("click", async() => {
 
 send_btn.addEventListener("click", async () => {
     const userText = user_input.value;
+    if(!userText){
+        return;
+    }
     create_message_bubble("user", userText);
     user_input.value = "";
 
@@ -231,3 +226,9 @@ user_input.addEventListener("keydown",  (e) => {
 
 
 load_saved_conversation();
+
+document.addEventListener("click", () => {
+    document.querySelectorAll(".drop-down.show").forEach(menu => {
+        menu.classList.remove("show");
+    });
+});
