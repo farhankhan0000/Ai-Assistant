@@ -1,3 +1,5 @@
+import os
+
 from fastapi import HTTPException, status, Response, Request
 from fastapi import APIRouter
 from typing import Annotated
@@ -10,6 +12,9 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime,timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from dotenv import load_dotenv
+
+load_dotenv()
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 
@@ -30,8 +35,8 @@ class UserRequest(BaseModel):
 
 
 
-SECRET_KEY = 'AI_EXPRESS'
-algorithm = 'HS256'
+SECRET_KEY = os.getenv("SECRET_KEY")
+algorithm = os.getenv("ALGORITHM")
 
 def user_verification(db, user_email: str, user_password: str):
     user = db.query(User).filter(User.email==user_email).first()
