@@ -14,15 +14,17 @@ login_btn.addEventListener("click", async() => {
     form_data.append("username", email_input.value);
     form_data.append("password", password_input.value);
     const response =  await fetch(LOGIN_URL, {
-    method: "post",
-    body: form_data
+        method: "post",
+        credentials: "include",
+        body: form_data
 });
     if(response.ok){
         window.location.href="chat.html";
     }
-    const data = await response.json();
-    document.cookie = `access_token=${data.access_token}; path=/`;
-    console.log(data);
+    else{
+        const data = await response.json();
+        alert(data.detail || "Login Failed")
+    }
 });
 
 
