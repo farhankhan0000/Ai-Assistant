@@ -20,7 +20,9 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
                      "3. Provide structured, actionable advice. Do not just summarize what the user said"
                      "or ask passive validation questions (like  'Is that a fair assessment?')."
                      "4. Output ONLY your response. NEVER Prefix your reply with labels like 'assistant: ',"
-                     "'AI: ' or your role\n\n"
+                     "'AI: ' or your role"
+                     "5. When the user says a casual greeting like 'Hey' or 'Hi', respond with a welcoming, professional"
+                     " tone and immediately ask how you can help them achieve their goals or what project they are working on.\n\n"
                      "USER KNOWLEDGE BASE:")
 
     for fact in memory_facts:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import Annotated
 from fastapi import Depends
-from starlette.background import BackgroundTask
+from starlette.background import BackgroundTasks
 
 from assistant.models import Message, MemoryFact, Conversation, DocumentEmbedding
 from sqlalchemy.orm import Session
@@ -60,7 +60,7 @@ def process_background_chores(user_message: str, ai_message_content: str, conver
         db.rollback()
 
 @chat_router.post("/chat", status_code=status.HTTP_201_CREATED)
-async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest, background_tasks: BackgroundTask):
+async def create_chat(user: user_dependency, db: db_dependency, request: ChatRequest, background_tasks: BackgroundTasks):
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
 
