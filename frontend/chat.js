@@ -4,10 +4,10 @@ const send_btn = document.querySelector(".send-button");
 const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
-CHAT_URL = "http://127.0.0.1:8000/chat";
-POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
-GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
-CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
+const CHAT_URL = "http://127.0.0.1:8000/chat";
+const POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+const GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
+const CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
 
 
 
@@ -62,16 +62,14 @@ const create_conversation_button = (title, id) => {
 
 
     newButton.addEventListener("click", async (e) => {
-        const token = document.cookie.split("; ").find(row => row.startsWith("access_token="))
-        ?.split("=")[1];
         const clickedId = e.target.dataset.id;
         currentConversation_Id = clickedId;
         const get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
         const response = await fetch(get_chat_url, {
             method: "GET",
             headers: {
-                "Authorization" : `Bearer ${token}`
-            }
+            },
+            credentials: "include"
         });
         let messages = await response.json();
         msg_container.innerHTML = "";
@@ -105,14 +103,13 @@ const create_conversation_button = (title, id) => {
 
     deleteButton.addEventListener("click", async  (e) => {
         e.stopPropagation();
-        const token = document.cookie.split(";").find(row => row.startsWith("access_token="))
-            ?.split("=")[1];
         const delete_url = `http://127.0.0.1:8000/conversation/${id}`;
         const response = await fetch(delete_url, {
             method: "delete",
             headers: {
-                "Authorization" : `Bearer ${token}`
-            }
+
+            },
+            credentials: "include"
         });
         if(response.ok){
             newDiv.remove()
@@ -131,13 +128,12 @@ const create_conversation_button = (title, id) => {
 }
 
 const load_saved_conversation = async ()  => {
-    const token = document.cookie.split("; ").find(row => row.startsWith("access_token="))
-    ?.split("=")[1];
     const response = await fetch(GET_CONVERSATION_URL, {
         method: "GET",
         headers: {
-            "Authorization" : `Bearer ${token}`
-        }
+
+        },
+        credentials : "include"
     });
     let conversations = await response.json();
     conversations.forEach(chat => {
@@ -149,14 +145,12 @@ const load_saved_conversation = async ()  => {
 
 
 new_chat_btn.addEventListener("click", async() => {
-    const token = document.
-    cookie.split("; ").find(row => row.startsWith("access_token="))?.split("=")[1];
     const response = await fetch(POST_CONVERSATION_URL, {
         method: "POST",
         headers: {
             "content-Type" : "application/json",
-            "Authorization" : `Bearer ${token}`
         },
+        credentials : "include",
         body: JSON.stringify({title: "New Chat"})
     });
     const newConversation = await response.json();
@@ -172,16 +166,14 @@ send_btn.addEventListener("click", async () => {
     const userText = user_input.value;
     create_message_bubble("user", userText);
     user_input.value = "";
-    const token = document.cookie.split("; ")
-        .find(row => row.startsWith("access_token="))?.split("=")[1];
 
     if(!currentConversation_Id){
         const convResponse = await fetch(POST_CONVERSATION_URL, {
             method: "POST",
             headers:{
                 "Content-Type" : "application/json",
-                "Authorization": `Bearer ${token}`
             },
+            credentials : "include",
             body: JSON.stringify({title: "New Chat"})
         });
         const newConvo = await convResponse.json();
@@ -197,9 +189,9 @@ send_btn.addEventListener("click", async () => {
     const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json",
-            "Authorization" : `Bearer ${token}`
+            "Content-Type" : "application/json"
         },
+        credentials : "include",
         body: JSON.stringify(chat_request)
     });
     const ai_reply = await response.json();
@@ -214,9 +206,9 @@ send_btn.addEventListener("click", async () => {
     const title_change_response = await fetch(CHANGE_TITLE_URL, {
         method: "PUT",
         headers: {
-            "Content-Type" : "application/json",
-            "Authorization" : `Bearer ${token}`
+            "Content-Type" : "application/json"
         },
+        credentials : "include",
         body: JSON.stringify(title_change_request)
     });
 
