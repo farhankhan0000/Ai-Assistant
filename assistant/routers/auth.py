@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Response, Request
 from fastapi import APIRouter
 from typing import Annotated
 from fastapi import Depends
@@ -50,7 +50,14 @@ def create_access_token(user_id: int, email: str, exp_time: timedelta):
 
     return jwt.encode(payload, SECRET_KEY, algorithm=algorithm)
 
-def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+async def get_current_user(request: Request):
+    token_cookie = request.cookies.get("access_token")
+
+    if not token_cookie:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+
+    token = token_cookie.replace("Bearer ", "")
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[algorithm])
         user_id = payload.get("id")
@@ -81,9 +88,18 @@ async def create_user(db: db_dependency, user_request: UserRequest):
     db.commit()
 
 @auth_router.post("/auth/login", status_code=status.HTTP_200_OK)
-async def get_token(db: db_dependency, form_data: OAuth2PasswordRequestForm = Depends()):
+async def get_token(response: Response,db: db_dependency, form_data: OAuth2PasswordRequestForm = Depends()):
     user = user_verification(db, form_data.username, form_data.password)
     if user is False:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found")
     token = create_access_token(user.id, user.email, timedelta(days=1))
-    return {"access_token" : token, "token_type" : "bearer"}
+
+    response.set_cookie(
+        key = "access_token",
+        value = f"Bearer {token}",
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        max_age=3600
+    )
+    return {"message" : "Login Successful"}
