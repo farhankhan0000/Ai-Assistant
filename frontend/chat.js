@@ -4,10 +4,10 @@ const send_btn = document.querySelector(".send-button");
 const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
-const CHAT_URL = "http://127.0.0.1:8000/chat";
-const POST_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
-const GET_CONVERSATION_URL = "http://127.0.0.1:8000/conversation";
-const CHANGE_TITLE_URL = "http://127.0.0.1:8000/conversation";
+const CHAT_URL = "http://localhost:8000/chat";
+const POST_CONVERSATION_URL = "http://localhost:8000/conversation";
+const GET_CONVERSATION_URL = "http://localhost:8000/conversation";
+const CHANGE_TITLE_URL = "http://localhost:8000/conversation";
 
 
 
@@ -64,7 +64,7 @@ const create_conversation_button = (title, id) => {
     newButton.addEventListener("click", async (e) => {
         const clickedId = e.target.dataset.id;
         currentConversation_Id = clickedId;
-        const get_chat_url = `http://127.0.0.1:8000/chat/${currentConversation_Id}`;
+        const get_chat_url = `http://localhost:8000/chat/${currentConversation_Id}`;
         const response = await fetch(get_chat_url, {
             method: "GET",
             credentials: "include"
@@ -101,7 +101,7 @@ const create_conversation_button = (title, id) => {
 
     deleteButton.addEventListener("click", async  (e) => {
         e.stopPropagation();
-        const delete_url = `http://127.0.0.1:8000/conversation/${id}`;
+        const delete_url = `http://localhost:8000/conversation/${id}`;
         const response = await fetch(delete_url, {
             method: "delete",
             credentials: "include"
