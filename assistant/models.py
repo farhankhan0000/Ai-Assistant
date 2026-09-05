@@ -9,9 +9,9 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False, unique=True)
+    name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    first_name = Column(String)
-    last_name = Column(String)
+
 
 class Conversation(Base):
     __tablename__ = 'conversations'

@@ -29,9 +29,9 @@ auth_router = APIRouter()
 
 class UserRequest(BaseModel):
     email: str
+    name: str
     password: str
-    first_name: str
-    last_name: str
+
 
 
 
@@ -86,9 +86,8 @@ async def get_current_user(request: Request):
 async def create_user(db: db_dependency, user_request: UserRequest):
     hashed_password = bcrypt_context.hash(user_request.password)
     user_model = User(email = user_request.email,
-                      hashed_password = hashed_password,
-                      first_name = user_request.first_name,
-                      last_name = user_request.last_name)
+                      name=user_request.name,
+                      hashed_password = hashed_password)
     db.add(user_model)
     db.commit()
 
