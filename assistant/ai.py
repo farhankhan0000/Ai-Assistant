@@ -1,6 +1,8 @@
 import ollama
 import os
+import json
 import numpy as np
+from redis.multidb import exception
 from sqlalchemy import select, true
 from assistant.models import DocumentEmbedding
 from datetime import datetime
@@ -116,12 +118,25 @@ def get_memory_facts(history:list) -> list[dict]:
             model="llama3.1:8b",
             messages=[
                 {"role" : "system", "content" :  system_prompt},
-                {"role" : "user", "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"}
-            ]
-
+                {"role" : "user",
+                 "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"},
+            ],
+            format=MemoryFactResponse.model_json_schema(),
+            options={
+                "temperature" : 0.0,
+                "num_predict" : 512
+            }
         )
 
-        return response["message"]["content"]
+        raw_content = response["message"]["content"]
+        parsed = json.loads(raw_content)
+        return parsed.get("facts", [])
+
+    except json.JSONDecodeError:
+        return []
+    except exception as e:
+        print(f"Extraction error: {e}")
+        return []
 
 def get_ai_title(user_message: str):
     system_prompt = ("You are a highly efficient title generator. Your only job is to read the user's "
