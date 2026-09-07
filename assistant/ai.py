@@ -111,18 +111,17 @@ def get_memory_facts(history:list) -> list[dict]:
     - User: "Can you explain how quicksort works?"
       Output: []"""
 
-try:
-    response=ollama.chat(
-        model="llama3.1:8b",
-        messages=[
-            {"role" : "system", "content" :  system_prompt},
-            {"role" : "user", "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"}
-        ]
-        temprature = 0.0,
-        max_tokens = 1024
-    )
+    try:
+        response=ollama.chat(
+            model="llama3.1:8b",
+            messages=[
+                {"role" : "system", "content" :  system_prompt},
+                {"role" : "user", "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"}
+            ]
 
-    return response["message"]["content"]
+        )
+
+        return response["message"]["content"]
 
 def get_ai_title(user_message: str):
     system_prompt = ("You are a highly efficient title generator. Your only job is to read the user's "
