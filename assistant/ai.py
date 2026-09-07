@@ -1,10 +1,21 @@
 import ollama
+import os
 import numpy as np
 from sqlalchemy import select, true
-
 from assistant.models import DocumentEmbedding
 from datetime import datetime
+from groq import Groq
+from pydantic import BaseModel,Field
 
+groq_client = Groq(api_key=os.getenv("GROQ_KEY"))
+
+class MemoryFact(BaseModel):
+    key: str=Field(description="snake_case identifier for the fact")
+    value: str=Field(description="the extracted fact value")
+
+
+class MemoryFactResponse(BaseModel):
+    facts: list[MemoryFact]
 
 
 
@@ -66,54 +77,49 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
     for m in messages:
         print(f"[{m['role'].upper()}] : {m['content']}\n")
 
-    response = ollama.chat(
-        model="llama3.1",
-        messages=messages
+    response = groq_client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=messages,
+        temperature=0.7,
+        max_tokens=1024
     )
 
-    return response["message"]["content"]
+    return response.choices[0].message.content
 
-def get_memory_facts(history):
+def get_memory_facts(history:list) -> list[dict]:
+    """
+    Extracts durable, user-specific facts from conversation history.
+    Returns a Python list of dicts: [{"key": "...", "value": "..."}]
+    """
     if len(history) < 2:
-        return "[]"
-    history_string = ""
-    for msg in history:
-        history_string += f"{msg.role} : {msg.content}\n"
-    messages = [
-        {"role" : "system",
-         "content" : """
-    Extract important long-term memory facts about the user from the conversation.
+        return []
+    history_string = "\n".join(f"{msg.role}: {msg.content}" for msg in history)
 
-Return ONLY valid JSON.
+    system_prompt = """You are a precise long-term memory extraction engine.
+    Analyze the user's statements in the conversation and extract durable personal facts.
 
-Format Example:
-[
-    {
-        "key": "primary_language",
-        "value": "Python"
-    }
-]
+    Rules:
+    1. Extract ONLY facts explicitly stated by the USER (skills, goals, preferences, background, constraints).
+    2. Ignore assistant messages, conversational filler, greetings, and temporary task context.
+    3. Use concise snake_case for all keys (e.g., `preferred_ide`, `experience_level`).
+    4. NEVER assume or infer values not stated (no "unknown", "n/a", or default guesses).
+    5. If no new long-term facts about the user exist, return an empty list.
 
-Rules:
-- Use snake_case for all keys (e.g. programming_languages, not programmingLanguages)
-- Only extract facts about the USER, not general opinions or topics discussed
-- Only save personal information that is useful long term (name, skills, goals, preferences, health, background).Ignore general Opinions
-- CRITICAL: If a detail (like name, age, or location) is NOT mentioned, DO NOT create a key for it. Never use values like "Not mentioned", "Unknown", or "N/A".
-- If the same fact exists with a slightly different key, use the most specific standardized key
-- If nothing worth saving exists, return an empty array []
-- Do not add explanations
-- Do not add markdown
-- Do not add ```json
-    """},
-        {
-            "role" : "user",
-            "content" : f"here is the conversation history to analyze:\n\n{history_string}"
-        }
-    ]
+    Examples:
+    - User: "I mostly write backend code in Go, and I use Neovim."
+      Output: [{"key": "primary_language", "value": "Go"}, {"key": "preferred_editor", "value": "Neovim"}]
+    - User: "Can you explain how quicksort works?"
+      Output: []"""
 
+try:
     response=ollama.chat(
-        model="llama3.1",
-        messages=messages
+        model="llama3.1:8b",
+        messages=[
+            {"role" : "system", "content" :  system_prompt},
+            {"role" : "user", "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"}
+        ]
+        temprature = 0.0,
+        max_tokens = 1024
     )
 
     return response["message"]["content"]
