@@ -1,5 +1,7 @@
-
+from fastapi.responses import FileResponse
 from fastapi import FastAPI
+from starlette.staticfiles import StaticFiles
+
 from assistant.routers.auth import auth_router as auth_router
 from assistant.routers.conversations import conversation_router as conversation_router
 from assistant.routers.memory_facts import memory_fact_router as memory_fact_router
@@ -10,8 +12,10 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://localhost:63342",
-    "http://127.0.0.1:63342",
+        "http://localhost:63342",
+        "http://127.0.0.1:63342",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
@@ -22,11 +26,18 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+@app.get("/")
+def read_root():
+    return FileResponse("frontend/welcome.html")
+
+
+
 app.include_router(auth_router)
 app.include_router(conversation_router)
 app.include_router(memory_fact_router)
 app.include_router(chat_router)
 
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 Base.metadata.create_all(bind=engine)
 
