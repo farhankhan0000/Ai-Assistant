@@ -1,8 +1,5 @@
-
 import os
 import json
-from google.genai import types
-
 import numpy as np
 from google import genai
 from sqlalchemy import select
@@ -126,7 +123,7 @@ def get_memory_facts(history:list) -> list[dict]:
                 {
                     "role": "user",
                     "content": f"Conversation history:\n\n{history_string}\n\nExtract facts:",
-                },
+                }
             ],
             response_format={"type": "json_object"},
             temperature=0.0,
