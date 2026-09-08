@@ -1,18 +1,20 @@
-import ollama
+
 import os
 import json
+from google.genai import types
+
 import numpy as np
 from google import genai
-from google.auth import api_key
-from redis.multidb import exception
-from sqlalchemy import select, true
+from sqlalchemy import select
 from assistant.models import DocumentEmbedding
 from datetime import datetime
 from groq import Groq
 from pydantic import BaseModel,Field
 
+gemini_client = genai.Client(api_key=os.getenv("GEMINI_KEY"),
+                             http_options={"api_version": "v1"})
 groq_client = Groq(api_key=os.getenv("GROQ_KEY"))
-gemini_client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+
 
 class MemoryFact(BaseModel):
     key: str=Field(description="snake_case identifier for the fact")
@@ -83,7 +85,7 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
         print(f"[{m['role'].upper()}] : {m['content']}\n")
 
     response = groq_client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         messages=messages,
         temperature=0.7,
         max_tokens=1024
@@ -117,27 +119,27 @@ def get_memory_facts(history:list) -> list[dict]:
       Output: []"""
 
     try:
-        response=ollama.chat(
-            model="llama3.1:8b",
+        response = groq_client.chat.completions.create(
+            model="openai/gpt-oss-20b",
             messages=[
-                {"role" : "system", "content" :  system_prompt},
-                {"role" : "user",
-                 "content" : f"Conversation history:\n\n{history_string}\n\nExtract facts:"},
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": f"Conversation history:\n\n{history_string}\n\nExtract facts:",
+                },
             ],
-            format=MemoryFactResponse.model_json_schema(),
-            options={
-                "temperature" : 0.0,
-                "num_predict" : 512
-            }
+            response_format={"type": "json_object"},
+            temperature=0.0,
+            max_tokens=512,
         )
 
-        raw_content = response["message"]["content"]
+        raw_content = response.choices[0].message.content
         parsed = json.loads(raw_content)
         return parsed.get("facts", [])
 
     except json.JSONDecodeError:
         return []
-    except exception as e:
+    except Exception as e:
         print(f"Extraction error: {e}")
         return []
 
@@ -159,7 +161,7 @@ def get_ai_title(user_message: str):
 
 
     response = groq_client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         messages=messages
     )
 
@@ -167,7 +169,7 @@ def get_ai_title(user_message: str):
 
 def get_vector(user_message: str):
     response = gemini_client.models.embed_content(
-        model="text-embedding-004",
+        model="gemini-embedding-001",
         contents=user_message
     )
     memory_vector = np.array(response.embeddings[0].values)
