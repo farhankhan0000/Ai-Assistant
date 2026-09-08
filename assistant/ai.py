@@ -2,6 +2,8 @@ import ollama
 import os
 import json
 import numpy as np
+from google import genai
+from google.auth import api_key
 from redis.multidb import exception
 from sqlalchemy import select, true
 from assistant.models import DocumentEmbedding
@@ -10,6 +12,7 @@ from groq import Groq
 from pydantic import BaseModel,Field
 
 groq_client = Groq(api_key=os.getenv("GROQ_KEY"))
+gemini_client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
 
 class MemoryFact(BaseModel):
     key: str=Field(description="snake_case identifier for the fact")
@@ -155,15 +158,19 @@ def get_ai_title(user_message: str):
 
 
 
-    response = ollama.chat(
-        model="llama3.1",
+    response = groq_client.chat.completions.create(
+        model="llama-3.1-8b-instant",
         messages=messages
     )
 
-    return response["message"]["content"]
+    return response.choices[0].message.content.strip()
 
 def get_vector(user_message: str):
-    memory_vector = np.array(ollama.embeddings(model="nomic-embed-text", prompt=user_message)["embedding"])
+    response = gemini_client.models.embed_content(
+        model="text-embedding-004",
+        contents=user_message
+    )
+    memory_vector = np.array(response.embeddings[0].values)
     return memory_vector
 
 def search_history(user_message: str, db):
