@@ -4,11 +4,20 @@ const send_btn = document.querySelector(".send-button");
 const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
 let currentConversation_Id = null;
-const CHAT_URL = "http://localhost:8000/chat";
-const POST_CONVERSATION_URL = "http://localhost:8000/conversation";
-const GET_CONVERSATION_URL = "http://localhost:8000/conversation";
-const CHANGE_TITLE_URL = "http://localhost:8000/conversation";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "login.html";
+        return {};
+    }
+    return {
+        "Content-Type" : "application/json",
+        "Authorization" : `Bearer ${token}`
+    };
+};
 
 
 
@@ -64,18 +73,17 @@ const create_conversation_button = (title, id) => {
     newButton.addEventListener("click", async (e) => {
         const clickedId = e.target.dataset.id;
         currentConversation_Id = clickedId;
-        const get_chat_url = `http://localhost:8000/chat/${currentConversation_Id}`;
-        const response = await fetch(get_chat_url, {
+        const response = await fetch(`${API_BASE_URL}/chat/${currentConversation_Id}`, {
             method: "GET",
-            credentials: "include"
+            headers: getAuthHeaders()
         });
-        let messages = await response.json();
-        msg_container.innerHTML = "";
-        messages.forEach(msg => {
-            create_message_bubble(msg.role, msg.content);
-        })
-        console.log(messages)
-        console.log(`Switched to conversations: ${currentConversation_Id}`);
+        if(response.ok){
+            const messages = await response.json();
+            msg_container.innerHTML = "";
+            messages.forEach(msg => {
+                create_message_bubble(msg.role, msg.content);
+            })
+        }
     });
 
     optionsButton.addEventListener("click", (e) => {
@@ -101,10 +109,10 @@ const create_conversation_button = (title, id) => {
 
     deleteButton.addEventListener("click", async  (e) => {
         e.stopPropagation();
-        const delete_url = `http://localhost:8000/conversation/${id}`;
+        const delete_url = `${API_BASE_URL}/conversation/${id}`;
         const response = await fetch(delete_url, {
-            method: "delete",
-            credentials: "include"
+            method: "DELETE",
+            headers : getAuthHeaders()
         });
         if(response.ok){
             newDiv.remove()
@@ -123,33 +131,31 @@ const create_conversation_button = (title, id) => {
 }
 
 const load_saved_conversation = async ()  => {
-    const response = await fetch(GET_CONVERSATION_URL, {
+    const response = await fetch(`${API_BASE_URL}/conversations`, {
         method: "GET",
-        credentials : "include"
+        headers: getAuthHeaders()
     });
-    let conversations = await response.json();
-    conversations.forEach(chat => {
+    if(response.status === 401){
+        const conversations = await response.json();
+        conversations.forEach(chat => {
         create_conversation_button(chat.title, chat.id);
     });
-
+    }
 }
 
 
-
 new_chat_btn.addEventListener("click", async() => {
-    const response = await fetch(POST_CONVERSATION_URL, {
+    const response = await fetch(`${API_BASE_URL}/conversation`, {
         method: "POST",
-        headers: {
-            "content-Type" : "application/json",
-        },
-        credentials : "include",
+        headers: getAuthHeaders(),
         body: JSON.stringify({title: "New Chat"})
     });
-    const newConversation = await response.json();
-    currentConversation_Id = newConversation.id;
-    create_conversation_button(newConversation.title, currentConversation_Id);
-    msg_container.innerHTML = "";
-    console.log(newConversation);
+    if(response.ok){
+        const newConversation = await response.json();
+        currentConversation_Id = newConversation.id;
+        create_conversation_button(newConversation.title, currentConversation_Id);
+        msg_container.innerHTML = "";
+    }
 });
 
 
