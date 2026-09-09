@@ -131,7 +131,7 @@ const create_conversation_button = (title, id) => {
 }
 
 const load_saved_conversation = async ()  => {
-    const response = await fetch(`${API_BASE_URL}/conversations`, {
+    const response = await fetch(`${API_BASE_URL}/conversation`, {
         method: "GET",
         headers: getAuthHeaders()
     });
@@ -188,10 +188,10 @@ send_btn.addEventListener("click", async () => {
         headers: getAuthHeaders(),
         body: JSON.stringify(chat_request)
     });
-    const ai_reply = await response.json();
-    create_message_bubble("assistant", ai_reply.ai_reply);
-
-    const active_button = document.querySelector(`.conversation[data-id="${currentConversation_Id}"]`);
+    if(response.ok){
+        const ai_reply = await response.json();
+        create_message_bubble("assistant", ai_reply.ai_reply);
+        const active_button = document.querySelector(`.conversation[data-id="${currentConversation_Id}"]`);
     if (active_button && active_button.innerText === "New Chat"){
         const title_change_request = {
         content: userText,
@@ -205,6 +205,7 @@ send_btn.addEventListener("click", async () => {
     if(title_change_response.ok){
         const title_data = await title_change_response.json()
         active_button.innerText = title_data.new_title;
+    }
     }
     }
 
