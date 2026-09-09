@@ -161,7 +161,7 @@ new_chat_btn.addEventListener("click", async() => {
 
 
 send_btn.addEventListener("click", async () => {
-    const userText = user_input.value;
+    const userText = user_input.value.trim();
     if(!userText){
         return;
     }
@@ -169,53 +169,43 @@ send_btn.addEventListener("click", async () => {
     user_input.value = "";
 
     if(!currentConversation_Id){
-        const convResponse = await fetch(POST_CONVERSATION_URL, {
+        const convResponse = await fetch(`${API_BASE_URL}/conversation`, {
             method: "POST",
-            headers:{
-                "Content-Type" : "application/json",
-            },
-            credentials : "include",
+            headers:getAuthHeaders(),
             body: JSON.stringify({title: "New Chat"})
         });
+        if(!convResponse.ok) return;
         const newConvo = await convResponse.json();
-
         currentConversation_Id = newConvo.id;
-
         create_conversation_button("New Chat", currentConversation_Id);
     }
     const chat_request = {
         content: userText,
         conversation_id: currentConversation_Id
     };
-    const response = await fetch(CHAT_URL, {
+    const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        credentials : "include",
+        headers: getAuthHeaders(),
         body: JSON.stringify(chat_request)
     });
     const ai_reply = await response.json();
     create_message_bubble("assistant", ai_reply.ai_reply);
 
     const active_button = document.querySelector(`.conversation[data-id="${currentConversation_Id}"]`);
-    if (active_button.innerText === "New Chat"){
+    if (active_button && active_button.innerText === "New Chat"){
         const title_change_request = {
         content: userText,
         conversation_id: currentConversation_Id
     }
-    const title_change_response = await fetch(CHANGE_TITLE_URL, {
+    const title_change_response = await fetch(`${API_BASE_URL}/conversation`, {
         method: "PUT",
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        credentials : "include",
+        headers: getAuthHeaders(),
         body: JSON.stringify(title_change_request)
     });
-
+    if(title_change_response.ok){
         const title_data = await title_change_response.json()
         active_button.innerText = title_data.new_title;
-    console.log(ai_reply);
+    }
     }
 
 });
@@ -231,10 +221,10 @@ user_input.addEventListener("keydown",  (e) => {
 });
 
 
-load_saved_conversation();
-
 document.addEventListener("click", () => {
     document.querySelectorAll(".drop-down.show").forEach(menu => {
         menu.classList.remove("show");
     });
 });
+
+load_saved_conversation();
