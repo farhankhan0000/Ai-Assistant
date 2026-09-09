@@ -135,11 +135,17 @@ const load_saved_conversation = async ()  => {
         method: "GET",
         headers: getAuthHeaders()
     });
-    if(response.status === 401){
+    if(response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+        return;
+    }
+    if(response.ok){
         const conversations = await response.json();
         conversations.forEach(chat => {
         create_conversation_button(chat.title, chat.id);
-    });
+        });
+
     }
 }
 
