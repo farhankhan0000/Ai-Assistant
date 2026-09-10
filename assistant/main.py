@@ -8,8 +8,14 @@ from assistant.routers.memory_facts import memory_fact_router as memory_fact_rou
 from assistant.database import engine,Base
 from assistant.routers.chat import chat_router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
         "http://localhost:63342",
@@ -39,7 +45,6 @@ app.include_router(chat_router)
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
-Base.metadata.create_all(bind=engine)
 
 
 
