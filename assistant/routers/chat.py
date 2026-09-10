@@ -38,9 +38,7 @@ def process_background_chores(user_message: str, ai_message_content: str, conver
             conversation_id = conversation_id
         )
         db.add(ai_message)
-
-        memory_facts = get_memory_facts(history)
-        facts = json.loads(memory_facts)
+        facts = get_memory_facts(history)
         for fact in facts:
             key = fact.get('key') or list(fact.keys())[0]
             value = fact.get('value') or list(fact.values())[0]
@@ -76,7 +74,7 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     db.commit()
 
 
-    history = (db.query(Message).filter(Message.conversation_id == user_message.conversation_id)
+    history = (db.query(Message).filter(Message.conversation_id == user_message.conversation_id, Message.id != user_message.id)
                .order_by(Message.id.desc()).limit(5).all())
     history.reverse()
 

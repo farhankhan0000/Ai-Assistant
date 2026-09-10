@@ -101,6 +101,7 @@ def get_memory_facts(history:list) -> list[dict]:
 
     system_prompt = """You are a precise long-term memory extraction engine.
     Analyze the user's statements in the conversation and extract durable personal facts.
+    Return your Responses strictly as a json object containing a "facts" list.
 
     Rules:
     1. Extract ONLY facts explicitly stated by the USER (skills, goals, preferences, background, constraints).
@@ -118,7 +119,7 @@ def get_memory_facts(history:list) -> list[dict]:
     try:
         response = groq_client.chat.completions.create(
             model="openai/gpt-oss-20b",
-            messages=[
+            messages=[ #type: ignore
                 {"role": "system", "content": system_prompt},
                 {
                     "role": "user",
