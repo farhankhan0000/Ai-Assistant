@@ -77,6 +77,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
 
 @auth_router.post("/auth/register", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, user_request: UserRequest):
+    if db.query(User).filter(User.email == user_request.email).first():
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
     hashed_password = bcrypt_context.hash(user_request.password)
     user_model = User(email = user_request.email,
                       name=user_request.name,
