@@ -39,4 +39,30 @@ def test_successful_user_login(client, new_user_payload):
     assert response.status_code == 200
     assert "access_token" in response.json()
 
+def test_failed_user_login_email(client, new_user_payload):
+    register_response = client.post("/auth/register", json=new_user_payload)
 
+    assert register_response.status_code == 201
+
+    wrong_data = {
+        "username" : "ingapinga",
+        "password" : "weakPassword"
+    }
+
+    failed_login_response = client.post("/auth/login", data=wrong_data)
+
+    assert failed_login_response.status_code == 401
+
+def test_failed_user_login_password(client, new_user_payload):
+    register_user = client.post("/auth/register", json=new_user_payload)
+
+    assert register_user.status_code == 201
+
+    wrong_data = {
+        "username" : new_user_payload["email"],
+        "password" : "ingapinga"
+    }
+
+    login_user = client.post("/auth/login", data=wrong_data)
+
+    assert login_user.status_code == 401
