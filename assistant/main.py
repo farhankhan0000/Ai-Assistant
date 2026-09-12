@@ -33,7 +33,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return FileResponse("frontend/welcome.html")
+    return FileResponse("frontend/index.html")
 
 
 
