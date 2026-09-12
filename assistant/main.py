@@ -17,10 +17,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-        "http://localhost:63342",
-        "http://127.0.0.1:63342",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "gritt-delta.vercel.app"
 ]
 
 app.add_middleware(
