@@ -19,7 +19,7 @@ app = FastAPI(lifespan=lifespan)
 origins = [
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-        "gritt-delta.vercel.app"
+        "https://gritt-delta.vercel.app"
 ]
 
 app.add_middleware(
