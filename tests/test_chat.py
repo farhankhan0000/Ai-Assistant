@@ -1,5 +1,6 @@
 import pytest
 
+from assistant.models import Message, MemoryFact
 from sandBox.embedding_practice import response
 
 
@@ -14,7 +15,7 @@ def test_chat_unauthorized(client):
 
 
 
-def test_chat(client,auth_headers,monkeypatch):
+def test_chat(client,auth_headers,monkeypatch,db):
     monkeypatch.setattr("assistant.routers.chat.get_ai_response",
                         lambda* args, **kwargs: "AI Message")
     monkeypatch.setattr("assistant.routers.chat.get_memory_facts",
@@ -36,3 +37,13 @@ def test_chat(client,auth_headers,monkeypatch):
 
     assert chat_response.status_code == 201
     assert chat_response.json()["ai_reply"] == "AI Message"
+
+    saved_messages = db.query(Message).filter(Message.conversation_id == conversation_id).all()
+    assert len(saved_messages) == 2
+    assert saved_messages[0].content == "User Message"
+    assert saved_messages[1].content == "AI Message"
+
+    saved_facts = db.query(MemoryFact).all()
+    assert len(saved_facts) == 1
+    assert saved_facts[0].key == "favorite colour"
+    assert saved_facts[0].value == "blue"

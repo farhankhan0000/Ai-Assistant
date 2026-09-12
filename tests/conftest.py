@@ -59,3 +59,11 @@ def auth_headers(client):
     token = response.json()["access_token"]
 
     return {"Authorization" : f"Bearer {token}"}
+
+@pytest.fixture()
+def db():
+    session = TestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
