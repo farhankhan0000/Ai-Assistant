@@ -1,6 +1,9 @@
 import  pytest
 import uuid
-from fastapi.testclient import TestClient
+from datetime import datetime,timedelta,timezone
+from jose import jwt
+from assistant.routers.auth import SECRET_KEY,algorithm
+
 
 
 @pytest.fixture()
@@ -37,6 +40,18 @@ def test_create_conversation_invalid_token(client):
     assert failed_response.status_code == 401
     assert failed_response.json()["detail"] == "Invalid token"
 
+def test_create_conversation_expired_token(client):
+    expired_payload = {
+        "id" : 1,
+        "email" : "expired_payload@gmail.com",
+        "exp" : datetime.now(timezone.utc) - timedelta(minutes=20)
+    }
+    expired_token = jwt.encode(expired_payload,SECRET_KEY,algorithm=algorithm)
+    header = {"Authorization" : f"Bearer {expired_token}"}
+    payload = {"title" : "New Chat"}
+    response = client.post("/conversation",json=payload, headers=header)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"
 
 def test_create_get_edit_delete_conversation(client, auth_headers,monkeypatch):
     monkeypatch.setattr("assistant.routers.conversations.get_ai_title",
