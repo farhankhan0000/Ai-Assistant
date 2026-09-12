@@ -50,3 +50,7 @@ def test_chat(client,auth_headers,monkeypatch,db):
     get_chat_response = client.get(f"/chat/{conversation_id}", headers=auth_headers)
     assert get_chat_response.status_code == 200
     assert get_chat_response.json()[0]["content"] == "User Message"
+
+    get_chat_response_failed = client.get("/chat/234",headers=auth_headers)
+    assert get_chat_response_failed.status_code == 404
+    assert get_chat_response_failed.json()["detail"] == "Conversation not found"
