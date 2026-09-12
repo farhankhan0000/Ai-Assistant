@@ -25,6 +25,7 @@ signup_button.addEventListener("click", async () => {
         });
 
         if(response.ok){
+            localStorage.setItem("username", request_body.name)
             window.location.href = "login.html";
         }else{
             const errorData = await response.json();

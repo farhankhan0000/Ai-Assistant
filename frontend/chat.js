@@ -3,6 +3,8 @@ const user_input = document.querySelector(".user-input");
 const send_btn = document.querySelector(".send-button");
 const msg_container = document.querySelector(".message-container");
 const conversations_container = document.querySelector(".conversations");
+const profile_name = document.querySelector(".profile-name");
+const saved_name = localStorage.getItem("username");
 let currentConversation_Id = null;
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -131,6 +133,9 @@ const create_conversation_button = (title, id) => {
 }
 
 const load_saved_conversation = async ()  => {
+    if(saved_name){
+        profile_name.innerText = saved_name;
+    }
     const response = await fetch(`${API_BASE_URL}/conversation`, {
         method: "GET",
         headers: getAuthHeaders()
