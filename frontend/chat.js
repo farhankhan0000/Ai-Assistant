@@ -30,7 +30,7 @@ const create_message_bubble = (role, text) => {
     else if(role === "assistant"){
         newDiv.classList.add("ai-reply");
     }
-    newDiv.innerText = text;
+    newDiv.innerHTML = marked.parse(text);
     msg_container.appendChild(newDiv);
     setTimeout(() => {
         msg_container.scrollTo({
@@ -189,11 +189,15 @@ send_btn.addEventListener("click", async () => {
         content: userText,
         conversation_id: currentConversation_Id
     };
+    send_btn.disabled = true;
+    send_btn.innerText = "Wait.."
     const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(chat_request)
     });
+    send_btn.disabled = false;
+    send_btn.innerText = "↑";
     if(response.ok){
         const ai_reply = await response.json();
         create_message_bubble("assistant", ai_reply.ai_reply);
