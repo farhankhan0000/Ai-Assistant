@@ -98,7 +98,7 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     return {"ai_reply" : ai_reply}
 
 
-@chat_router.get("/chat/{conversation_id}")
+@chat_router.get("/chat/{conversation_id}", status_code=status.HTTP_200_OK)
 async  def get_chat(user: user_dependency, db: db_dependency, conversation_id: int):
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")

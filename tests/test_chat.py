@@ -1,7 +1,6 @@
 import pytest
-
 from assistant.models import Message, MemoryFact
-from sandBox.embedding_practice import response
+
 
 
 
@@ -47,3 +46,7 @@ def test_chat(client,auth_headers,monkeypatch,db):
     assert len(saved_facts) == 1
     assert saved_facts[0].key == "favorite colour"
     assert saved_facts[0].value == "blue"
+
+    get_chat_response = client.get(f"/chat/{conversation_id}", headers=auth_headers)
+    assert get_chat_response.status_code == 200
+    assert get_chat_response.json()[0]["content"] == "User Message"
