@@ -66,3 +66,4 @@ def test_failed_user_login_password(client, new_user_payload):
     login_user = client.post("/auth/login", data=wrong_data)
 
     assert login_user.status_code == 401
+
