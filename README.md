@@ -8,6 +8,8 @@ through structured memory and semantic retrieval.
 It combines persistent user-specific facts with embedding-based retrieval of relevant past conversations, 
 allowing responses to be informed by both long-term memory and previous interactions.
 
+**[Live Demo](https://gritt-delta.vercel.app/)**
+
 ## What Gritt Can Do
 
 - Maintain persistent user-specific memory
@@ -84,6 +86,14 @@ The backend is tested using pytest.
 Tests cover the application's endpoints and core functions, including successful requests,
 validation failures, authentication failures, and error-handling paths.
 
+
+## Deployment
+
+- Frontend: Vercel
+- Backend API: Render
+- Database: PostgreSQL
+[Live Frontend](https://gritt-delta.vercel.app/)
+[Live BACKEND](https://gritt-api.onrender.com/)
 
 ## Project Journey
 
