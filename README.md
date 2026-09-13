@@ -72,6 +72,9 @@ context to the language model.
 - PostgreSQL
 - Background tasks
 
+### Database
+- PostgreSQL (hosted on Neon)
+
 ### AI Layer
 - Groq
 - GPT-OSS-20B
