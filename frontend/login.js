@@ -1,7 +1,7 @@
 const email_input = document.querySelector(".email-input");
 const password_input = document.querySelector(".password-input");
 const login_btn = document.querySelector(".login-button");
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://gritt-api.onrender.com";
 
 
 

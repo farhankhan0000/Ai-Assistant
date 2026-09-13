@@ -6,7 +6,7 @@ const conversations_container = document.querySelector(".conversations");
 const profile_name = document.querySelector(".profile-name");
 const saved_name = localStorage.getItem("username");
 let currentConversation_Id = null;
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://gritt-api.onrender.com";
 
 
 const getAuthHeaders = () => {

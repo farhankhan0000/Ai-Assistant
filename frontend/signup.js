@@ -2,7 +2,7 @@ const email = document.querySelector(".email-input");
 const name = document.querySelector(".name-input");
 const password = document.querySelector(".password-input")
 const signup_button = document.querySelector(".signup-btn")
-const SIGN_UP_URL = "http://localhost:8000/auth/register";
+const SIGN_UP_URL = "https://gritt-api.onrender.com/auth/register";
 
 
 signup_button.addEventListener("click", async () => {
