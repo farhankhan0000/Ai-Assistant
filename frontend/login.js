@@ -10,6 +10,8 @@ const API_BASE_URL = "https://gritt-api.onrender.com";
 
 
 login_btn.addEventListener("click", async() => {
+    login_btn.disabled = true;
+    login_btn.textContent = "Logging in..."
     const form_data = new URLSearchParams();
     form_data.append("username", email_input.value);
     form_data.append("password", password_input.value);
@@ -28,6 +30,9 @@ login_btn.addEventListener("click", async() => {
         }
     } catch (error) {
         console.error("Login request Failed:", error)
+    } finally {
+        login_btn.disabled = false;
+        login_btn.textContent = "Login";
     }
     });
 

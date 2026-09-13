@@ -10,6 +10,7 @@ signupButton.addEventListener("click", () => {
 });
 
 loginButton.addEventListener("click", () => {
-    window.location.href = "login.html";
+        window.location.href = "login.html";
+    
 });
 

@@ -6,6 +6,8 @@ const SIGN_UP_URL = "https://gritt-api.onrender.com/auth/register";
 
 
 signup_button.addEventListener("click", async () => {
+    signup_button.disabled = true;
+    signup_button.textContent = "Signing Up.."
 
     const request_body = {
         email: email.value,
@@ -34,6 +36,9 @@ signup_button.addEventListener("click", async () => {
 
     } catch (error){
         console.error("Error during Signup:", error)
+    } finally {
+        signup_button.disabled = false;
+        signup_button.textContent = "Signup";
     }
 
 
