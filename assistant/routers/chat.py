@@ -23,12 +23,13 @@ class ChatRequest(BaseModel):
     conversation_id: int
 
 
-def process_background_chores(user_message: str, ai_message_content: str, conversation_id: int, user_id, db: Session, history: list):
+def process_background_chores(user_message: str, ai_message_content: str, conversation_id: int, user_id: int, db: Session, history: list):
     try:
         message_vector = get_vector(user_message)
         new_memory = DocumentEmbedding(
             content = user_message,
-            embedding = message_vector
+            embedding = message_vector,
+            user_id = user_id
         )
         db.add(new_memory)
 
@@ -63,7 +64,8 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
         raise HTTPException(status_code=401, detail="User not found")
 
     conversation = db.query(Conversation).filter(Conversation.id == request.conversation_id).first()
-    if conversation is None or conversation.user_id != user.get("user_id"):
+    user_id = user.get("user_id")
+    if conversation is None or conversation.user_id != user_id:
         raise HTTPException(status_code=403, detail="Wrong Conversation")
 
     user_message = Message(role="user",
@@ -79,20 +81,20 @@ async def create_chat(user: user_dependency, db: db_dependency, request: ChatReq
     history.reverse()
 
 
-    all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user.get("user_id")).all()
+    all_memory_facts = db.query(MemoryFact).filter(MemoryFact.user_id == user_id).all()
 
 
 
-    ai_reply = get_ai_response(user_message.content, db, all_memory_facts, history)
+    ai_reply = get_ai_response(user_message.content, db, all_memory_facts, history, user_id)
 
     background_tasks.add_task(
         process_background_chores,
         user_message = request.content,
         ai_message_content = ai_reply,
         conversation_id = request.conversation_id,
-        user_id = user.get("user_id"),
+        user_id = user_id,
         db=db,
-        history=history
+        history=history,
     )
 
     return {"ai_reply" : ai_reply}
@@ -105,4 +107,8 @@ async  def get_chat(user: user_dependency, db: db_dependency, conversation_id: i
     conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
     if conversation is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
+
+    if conversation.user_id != user.get("user_id"):
+        raise HTTPException(status_code=403, detail="Wrong Conversation")
+    
     return db.query(Message).filter(Message.conversation_id == conversation_id).all()

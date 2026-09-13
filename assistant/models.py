@@ -47,3 +47,4 @@ class DocumentEmbedding(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(Text, nullable=False)
     embedding = Column(Vector(3072))
+    user_id = Column(Integer, ForeignKey('users.id'))

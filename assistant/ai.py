@@ -23,7 +23,7 @@ class MemoryFactResponse(BaseModel):
 
 
 
-def get_ai_response( user_message: str, db,  memory_facts, history):
+def get_ai_response( user_message: str, db,  memory_facts, history, user_id: int):
     current_time = datetime.now().strftime("%A, %B %d, %Y at %I:%M %p")
     system_prompt = (f"You are a direct, Insightful, and a Practical AI advisor.\n"
                      "CORE BEHAVIOUR RULES: \n"
@@ -56,7 +56,7 @@ def get_ai_response( user_message: str, db,  memory_facts, history):
         if user_message.lower().strip("!.?, ") == words:
             formal_words_present = True
     if not formal_words_present:
-        relevant_past_messages = search_history(user_message, db)
+        relevant_past_messages = search_history(user_message, db, user_id)
         if relevant_past_messages:
             past_context += "BACKGROUND CONTEXT: (Use this to inform your answer invisibly. Do not explicitly reference this section):\n"
             for past_msg in relevant_past_messages:
@@ -173,9 +173,9 @@ def get_vector(user_message: str):
     memory_vector = np.array(response.embeddings[0].values)
     return memory_vector
 
-def search_history(user_message: str, db):
+def search_history(user_message: str, db, user_id : int):
     current_message = get_vector(user_message)
-    results = db.scalars(select(DocumentEmbedding)
+    results = db.scalars(select(DocumentEmbedding).where(DocumentEmbedding.user_id == user_id)
                          .order_by(DocumentEmbedding.embedding.cosine_distance(current_message))
                          .limit(3)).all()
     return [item.content for item in results]
